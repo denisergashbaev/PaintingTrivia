@@ -6,17 +6,18 @@
     <div>Who is this painting created by?</div>
     <h2>{{ selected_painting.title }}</h2>
     <h2><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="160" height="160"
-             border="0">
+             border="0"></h2>
+    <div>Answers:</div>
 
-        <div>Answers:</div>
-        <form method="post">
-            <ul class=entries>
-                {% for painter in painters %}
-                    <input id="chosen_painter_{{ painter.id }}" type="radio" name="chosen_painter"
-                           value="{{ painter.id }}">
-                    <label for="chosen_painter_{{ painter.id }}">{{ painter.name }}</label>
-                {% endfor %}
-            </ul>
-            <input type="submit" value="Submit"/>
-        </form>
+    <form method="post">
+        <ul class=entries>
+            {% for painter in painters %}
+                <input id="chosen_painter_{{ painter.id }}" type="radio" name="chosen_painter"
+                       value="{{ painter.id }}">
+                <label for="chosen_painter_{{ painter.id }}">{{ painter.name }}</label>
+            {% endfor %}
+        </ul>
+        <input type="submit" value="Submit"/>
+    </form>
+
 {% endblock %}
