@@ -1,0 +1,2 @@
+#install sqlite3 database
+sudo apt-get install sqlite3 libsqlite3-dev
