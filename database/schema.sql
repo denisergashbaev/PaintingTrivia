@@ -2,7 +2,7 @@
 
 
 CREATE TABLE IF NOT EXISTS painting (
-  id integer primary key autoincrement,
+  id integer primary key,
   title text not null,
   file_name text not null
 );
