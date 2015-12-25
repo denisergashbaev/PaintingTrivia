@@ -1,23 +1,22 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
-    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-      <dl>
-        <dt>Title:
-        <dd><input type=text size=30 name=title>
-        <dt>Text:
-        <dd><textarea name=text rows=5 cols=40></textarea>
-        <dd><input type=submit value=Share>
-      </dl>
-    </form>
-  {% endif %}
-  <ul class=entries>
-  {% for entry in entries %}
-    <img src= {{ url_for('static', filename = 'pics/%s' % entry.file_name) }} width="160" height="160" border="0">
-    <li><h2>{{ entry.title }}</h2>
-        <h2>{{ entry.file_name }}</h2>
-  {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
-  {% endfor %}
-  </ul>
+    <div>Statistics:</div>
+    <div>Right guesses: {{ right_guesses }}</div>
+    <div>Wrong guesses: {{ wrong_guesses }}</div>
+    <div>Who is this painting created by?</div>
+    <h2>{{ selected_painting.title }}</h2>
+    <h2><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="160" height="160"
+             border="0">
+
+        <div>Answers:</div>
+        <form method="post">
+            <ul class=entries>
+                {% for painter in painters %}
+                    <input id="chosen_painter_{{ painter.id }}" type="radio" name="chosen_painter"
+                           value="{{ painter.id }}">
+                    <label for="chosen_painter_{{ painter.id }}">{{ painter.name }}</label>
+                {% endfor %}
+            </ul>
+            <input type="submit" value="Submit"/>
+        </form>
 {% endblock %}
