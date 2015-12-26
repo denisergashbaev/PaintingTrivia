@@ -1,5 +1,7 @@
-#idea stuff
+
+#idea & database
 .idea
+database/*.db
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
