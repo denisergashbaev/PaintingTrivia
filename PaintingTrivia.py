@@ -84,12 +84,6 @@ def login():
         session['username'] = request.form['username']
         return redirect(url_for('show_entries'))
     return render_template('menu.html')
-    '''
-        <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
 
 
 @app.route('/game', methods=['GET', 'POST'])
