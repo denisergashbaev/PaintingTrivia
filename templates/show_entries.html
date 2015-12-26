@@ -5,8 +5,8 @@
     <div>Wrong guesses: {{ wrong_guesses }}</div>
     <div>Who is this painting created by?</div>
     <h2>{{ selected_painting.title }}</h2>
-    <h2><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="160" height="160"
-             border="0"></h2>
+    <center><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="160" height="160"
+             border="0"></center>
     <div>Answers:</div>
 
     <form method="post">

@@ -72,10 +72,10 @@ def teardown_request(exception):
 @app.route('/')
 def index():
     if 'username' in session:
-        return 'Logged in as %s' % Markup.escape(session['username'])
+        # return 'Logged in as %s' % Markup.escape(session['username'])
+        return redirect(url_for('show_entries'))
     else:
-        redirect(url_for('login'))
-    return 'You are not logged in'
+        return redirect(url_for('login'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
