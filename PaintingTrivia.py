@@ -9,6 +9,8 @@ from models.painting import Painting
 from settings import app
 
 
+
+
 @app.route('/', methods=['GET', 'POST'])
 def show_entries():
     #initialize the points in the user session
@@ -44,6 +46,8 @@ def show_entries():
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
                            wrong_guesses=session['wrong_guesses'])
+
+
 
 if __name__ == '__main__':
     app.run()
