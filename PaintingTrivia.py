@@ -8,13 +8,16 @@ from models.painter import Painter
 from models.painting import Painting
 from settings import app
 
-
-@app.route('/', methods=['GET', 'POST'])
-def show_entries():
+@app.before_request
+def set_session():
     #initialize the points in the user session
     if 'right_guesses' not in session:
         session['right_guesses'] = 0
         session['wrong_guesses'] = 0
+
+
+@app.route('/', methods=['GET', 'POST'])
+def show_entries():
     #if the request is sent from a form
     if request.method == 'POST':
         if int(request.form['chosen_painter']) == session['selected_painter_id']:
