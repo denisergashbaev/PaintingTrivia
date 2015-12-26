@@ -77,8 +77,10 @@ def show_entries():
     # fetch 4 random paintings
     sql = 'SELECT * FROM painter ORDER BY RANDOM() LIMIT 4'
     painters = g.db.execute(sql).fetchall()
+
     #select the first painter (it is random because the records were selected randomly)
     selected_painter = painters[0]
+
     #http://stackoverflow.com/questions/2279706/select-random-row-from-an-sqlite-table
     sql = 'SELECT * FROM painting WHERE fk_painter_id = ? ORDER BY RANDOM() LIMIT 1'
     cur = g.db.execute(sql, [selected_painter['id']])
