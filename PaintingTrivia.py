@@ -1,7 +1,8 @@
 # all the imports
 import sqlite3
+import random
 from flask import Flask, request, session, g, redirect, url_for, \
-    abort, render_template, flash
+    abort, render_template, flash, Markup
 from contextlib import closing
 from os.path import abspath, dirname
 
@@ -16,8 +17,8 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 
 
-#http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
-#https://docs.python.org/2/library/sqlite3.html#sqlite3.Connection.row_factory
+# http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
+# https://docs.python.org/2/library/sqlite3.html#sqlite3.Connection.row_factory
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -49,6 +50,13 @@ def init_db():
         db.commit()
 
 
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+
 @app.before_request
 def before_request():
     g.db = connect_db()
@@ -61,13 +69,31 @@ def teardown_request(exception):
         db.close()
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def index():
+    if 'username' in session:
+        # return 'Logged in as %s' % Markup.escape(session['username'])
+        return redirect(url_for('show_entries'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('show_entries'))
+    return render_template('menu.html')
+
+
+@app.route('/game', methods=['GET', 'POST'])
 def show_entries():
-    #initialize the points in the user session
+    # initialize the points in the user session
     if 'right_guesses' not in session:
         session['right_guesses'] = 0
         session['wrong_guesses'] = 0
-    #if the request is sent from a form
+
+    # if the request is sent from a form
     if request.method == 'POST':
         if int(request.form['chosen_painter']) == session['selected_painting']['id']:
             session['right_guesses'] += 1
@@ -78,10 +104,10 @@ def show_entries():
     sql = 'SELECT * FROM painter ORDER BY RANDOM() LIMIT 4'
     painters = g.db.execute(sql).fetchall()
 
-    #select the first painter (it is random because the records were selected randomly)
-    selected_painter = painters[0]
+    # select the first painter (it is random because the records were selected randomly)
+    selected_painter = random.choice(painters)
 
-    #http://stackoverflow.com/questions/2279706/select-random-row-from-an-sqlite-table
+    # http://stackoverflow.com/questions/2279706/select-random-row-from-an-sqlite-table
     sql = 'SELECT * FROM painting WHERE fk_painter_id = ? ORDER BY RANDOM() LIMIT 1'
     cur = g.db.execute(sql, [selected_painter['id']])
     selected_painting = cur.fetchone()
@@ -92,6 +118,7 @@ def show_entries():
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
                            wrong_guesses=session['wrong_guesses'])
+
 
 if __name__ == '__main__':
     init_db()
