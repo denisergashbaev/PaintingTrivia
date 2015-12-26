@@ -28,7 +28,6 @@ def show_entries():
     #painters = g.db.execute(sql).fetchall()
     painters = Painter.query.order_by(func.random()).limit(4).all()
 
-    #select the first painter (it is random because the records were selected randomly)
     selected_painter = random.choice(painters)
 
     #WAS
