@@ -1,7 +1,5 @@
 import random
-
-from flask import request, session, render_template
-
+from flask import request, session, render_template, Markup, redirect, url_for, Flask
 from sqlalchemy.sql.functions import func
 from models.painter import Painter
 from models.painting import Painting
@@ -16,7 +14,33 @@ def set_session():
         session['wrong_guesses'] = 0
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def index():
+    if 'username' in session:
+        # return 'Logged in as %s' % Markup.escape(session['username'])
+        print 'index to show entries'
+        return redirect(url_for('show_entries'))
+    else:
+        print 'index to login'
+        return redirect(url_for('login'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return render_template('menu.html')
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+
+@app.route('/play', methods=['GET', 'POST'])
 def show_entries():
     # if the request is sent from a form
     if request.method == 'POST':
