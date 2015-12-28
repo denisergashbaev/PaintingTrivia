@@ -4,6 +4,7 @@ from sqlalchemy.sql.functions import func
 from models.painter import Painter
 from models.painting import Painting
 from settings import app
+from database import users
 
 
 @app.before_request
@@ -28,8 +29,15 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        session['username'] = request.form['username']
-        return redirect(url_for('index'))
+        username_aux = request.form['username']
+        password_aux = request.form['password']
+        if not(username_aux == '' or password_aux == ''):
+            print username_aux, password_aux
+            session['username'] = username_aux
+            session['password'] = password_aux
+            user_bool = users.add_user(username_aux, password_aux)
+            if user_bool:
+                return redirect(url_for('index'))
     return render_template('menu.html')
 
 
