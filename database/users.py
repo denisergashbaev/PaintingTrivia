@@ -6,13 +6,10 @@ db.create_all()
 
 
 def add_user(user_name, user_password):
-    # if does not exits, create it
 
+    q = db.session.query(User).filter(User.name == user_name).all()
 
     # check if the user exist
-    # existing_user_name = User.query.filter(User.name == user_name)
-    q = db.session.query(User).filter(User.name == user_name).all()
-    # print 'HERE', existing_user_name.user.name, existing_user_name.user.password_
     if not q:
         # Add user
         print user_name, user_password
@@ -20,4 +17,13 @@ def add_user(user_name, user_password):
         db.session.add(user)
         db.session.commit()
         return True
+    return False
+
+
+def check_user_password(user_name, user_password):
+    q = db.session.query(User).filter(User.name == user_name).all()
+    if q:
+        # Add user
+        if q.password == user_password:
+            return True
     return False
