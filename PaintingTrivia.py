@@ -9,15 +9,22 @@ from database import users
 from settings import db
 
 
+def button_to_address(value):
+    d = {
+        'Login': login,
+        'Register': register,
+        'Logout': logout
+    }
+    return d[value] if value in d.keys() else None
+
+
 def layout_buttons(request):
-    print request.form.values(), request.__dict__.keys()
-    print request.form
-    if 'Login' in request.form.values():
-        return redirect(url_for('login'))
-    if 'Register' in request.form.values():
-        return redirect(url_for('register'))
-    if 'Logout' in request.form.values():
-        return redirect(url_for('logout'))
+    if 'navigate_to' in request.form.keys():
+        assert request.form['navigate_to'] in ['Login', 'Register', 'Logout']
+        value = request.form['navigate_to']
+        func = button_to_address(value)
+        redirect_fun_name = func.__name__
+        return redirect(url_for(redirect_fun_name))
 
 
 @app.before_request
@@ -40,7 +47,6 @@ def index():
 @app.route('/main', methods=['GET', 'POST'])
 def menu():
     if request.method == 'POST':
-        print 'Hey'
         x = layout_buttons(request)
         if x:
             return x
@@ -55,14 +61,13 @@ def login():
             return x
         username_aux = request.form['username']
         password_aux = request.form['password']
-        if not (username_aux == '' or password_aux == ''):
+        if username_aux and password_aux:
             # Check if the username exists
-            retrieved_users = User.query.filter(User.name == username_aux).order_by(func.random()).all()
+            retrieved_users = User.query.filter(User.name == username_aux).all()
             if retrieved_users:
                 # Check if the password is correct
-                if retrieved_users[0].password == password_aux:
+                if users.check_user_password(username_aux, password_aux):
                     session['username'] = username_aux
-                    session['password'] = password_aux
                     return redirect(url_for('index'))
                 else:
                     flash('Password is wrong!', 'error')
@@ -81,17 +86,14 @@ def register():
             return x
         username_aux = request.form['username']
         password_aux = request.form['password']
-        if not (username_aux == '' or password_aux == ''):
-            session['username'] = username_aux
-            session['password'] = password_aux
-            retrieved_users = User.query.filter(User.name == username_aux).order_by(func.random()).all()
+        if username_aux and password_aux:
+            retrieved_users = User.query.filter(User.name == username_aux).all()
             if retrieved_users:
                 # Check if the password is correct
                 flash('User already exists', 'error')
             else:
                 # Add the user
                 session['username'] = username_aux
-                session['password'] = password_aux
                 users.add_user(username_aux, password_aux)
                 db.session.commit()
                 return redirect(url_for('index'))
@@ -102,7 +104,7 @@ def register():
 def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
-    session.pop('password', None)
+    session.clear()
     return redirect(url_for('index'))
 
 

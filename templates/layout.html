@@ -2,17 +2,17 @@
 <title>PaintingTrivia</title>
 <div class="page">
     <form method="post">
-        <p><input type=submit name=btn value=Login>
-        <p><input type=submit name=btn value=Register>
+        <p><input type="submit" name="navigate_to" value="Login">
+        <p><input type="submit" name="navigate_to" value="Register">
     </form>
 </div>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<div class="page">
   <h1>PaintingTrivia</h1>
-  <div class=metanav>
+  <div class="metanav">
   </div>
   {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
+    <div class="flash">{{ message }}</div>
   {% endfor %}
   {% block body %}{% endblock %}
 </div>
