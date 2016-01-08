@@ -2,7 +2,8 @@
 from settings import db
 from models.painter import Painter
 from models.painting import Painting
-
+from models.user import User
+from database.users import add_user
 #creates tables (schema)
 db.create_all()
 
@@ -30,10 +31,14 @@ paintings = [
     Painting(painters['painter4'], u'The Cliffs at Etretat', 'Claude_Monet_The_Cliffs_at_Etretat.jpg'),
 ]
 
+
+
 for painter in painters.values():
     db.session.add(painter)
 
 for painting in paintings:
     db.session.add(painting)
+
+add_user('DUMMY','DUMMY')
 
 db.session.commit()

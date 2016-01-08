@@ -1,0 +1,13 @@
+{% extends "layout_logged_in.html" %}
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <title>TriviArt</title>
+</head>
+<body>
+    <header>Choose the Game</header>
+        <form method="post">
+            <p><input type="submit" name="navigate_to" value="Guess the Saint">
+            <p><input type="submit" name="navigate_to" value="Guess the Painter">
+        </form>
+{% endblock %}
