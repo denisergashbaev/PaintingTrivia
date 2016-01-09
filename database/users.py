@@ -4,6 +4,7 @@ import crypt
 
 
 def add_user(user_name, user_password):
+    db.create_all()
     q = db.session.query(User).filter(User.name == user_name).all()
 
     # check if the user exist
