@@ -136,6 +136,7 @@ def guess_the_painter():
     print Painting.painter, selected_painter
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
         1).first()
+    print selected_painting
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_painter.html',
                            painters=painters,

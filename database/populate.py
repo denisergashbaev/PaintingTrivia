@@ -5,6 +5,7 @@ from models.painting import Painting
 from models.user import User
 from database.users import add_user
 #creates tables (schema)
+
 db.create_all()
 
 painters = {
@@ -18,9 +19,9 @@ painters = {
     'painter8': Painter(u'Berthe Morisot'),
     'painter9': Painter(u'Armand Guillaumin'),
     'painter10': Painter(u'Gustave Caillebotte'),
-    'painter11': Painter(u'Georges Seurat'),
-
+    'painter11': Painter(u'Georges Seurat')
 }
+
 
 paintings = [
     Painting(painters['painter1'], u'Starry Night', '1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg'),
@@ -32,13 +33,12 @@ paintings = [
 ]
 
 
-
 for painter in painters.values():
     db.session.add(painter)
 
 for painting in paintings:
     db.session.add(painting)
 
-add_user('DUMMY','DUMMY')
+add_user('DUMMY', 'DUMMY')
 
 db.session.commit()
