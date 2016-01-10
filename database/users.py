@@ -1,3 +1,4 @@
+from sqlalchemy.sql.expression import and_
 from settings import db
 from models.user import User
 import crypt
@@ -17,6 +18,6 @@ def add_user(user_name, user_password):
 
 
 def check_user_password(user_name, user_password):
-    retrieved_users = User.query.filter(User.name == user_name).all()
-    if retrieved_users:
-        return retrieved_users[0].password == crypt.crypt(user_password, user_name)
+    retrieved_users = User.query.filter(and_(User.name == user_name, User.password == crypt.crypt(user_password, user_name))
+                                        ).first()
+    return retrieved_users is not None

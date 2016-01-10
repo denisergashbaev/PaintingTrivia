@@ -1,9 +1,12 @@
+from database import users
+from models.user import User
 from settings import db
 from models.painter import Painter
 from models.painting import Painting
 
 #creates tables (schema)
 db.create_all()
+db.session.commit()
 
 painters = {
     'painter1': Painter('Van Gogh1'),
@@ -26,5 +29,7 @@ for painter in painters.values():
 
 for painting in paintings:
     db.session.add(painting)
+
+users.add_user('test', 'test')
 
 db.session.commit()
