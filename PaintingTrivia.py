@@ -5,11 +5,10 @@ from models.painter import Painter
 from models.painting import Painting
 from models.user import User
 from settings import app
-from database import users
 from settings import db
 
 
-def get_valid_actions():
+def valid_actions():
     return [login.__name__, register.__name__, logout.__name__]
 
 
@@ -18,7 +17,7 @@ def layout_buttons():
         navigate_to = request.form['navigate_to']
     except KeyError:
         navigate_to = None
-    if navigate_to in get_valid_actions():
+    if navigate_to in valid_actions():
         return redirect(url_for(navigate_to))
 
 
@@ -62,7 +61,7 @@ def login():
             retrieved_users = User.query.filter(User.name == username_aux).all()
             if retrieved_users:
                 # Check if the password is correct
-                if users.check_user_password(username_aux, password_aux):
+                if User.check_user_password(username_aux, password_aux):
                     session['username'] = username_aux
                     return redirect(url_for('index'))
                 else:
@@ -90,7 +89,7 @@ def register():
             else:
                 # Add the user
                 session['username'] = username_aux
-                users.add_user(username_aux, password_aux)
+                User.add_user(username_aux, password_aux)
                 db.session.commit()
                 return redirect(url_for('index'))
     return render_template('register.html')
