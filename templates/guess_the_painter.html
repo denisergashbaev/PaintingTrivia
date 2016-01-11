@@ -11,7 +11,7 @@
     <div>Answers:</div>
 
     <form method="post">
-        <ul class=entries>
+        <ul class="entries">
             {% for painter in painters %}
                 <input id="chosen_painter_{{ painter.id }}" type="radio" name="chosen_painter"
                        value="{{ painter.id }}">
