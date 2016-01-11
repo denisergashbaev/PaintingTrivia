@@ -108,10 +108,6 @@ def logout():
     return redirect(url_for('index'))
 
 
-<<<<<<< HEAD
-@app.route('/play', methods=['GET', 'POST'])
-def show_entries():
-=======
 @app.route('/main_menu', methods=['GET', 'POST'])
 def main_menu():
     if request.method == 'POST':
@@ -151,7 +147,6 @@ def guess_the_painter():
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])
 def guess_the_saint():
->>>>>>> 784d5cc... Fix error when paintors have no paintings
     # if the request is sent from a form
     if request.method == 'POST':
         x = layout_buttons(request)
@@ -165,11 +160,7 @@ def guess_the_saint():
     selected_painter = random.choice(painters)
 
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-<<<<<<< HEAD
-        1).one()
-=======
         1).all()
->>>>>>> 784d5cc... Fix error when paintors have no paintings
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('show_entries.html',
                            painters=painters,
