@@ -19,7 +19,9 @@ painters = {
     'painter8': Painter(u'Berthe Morisot'),
     'painter9': Painter(u'Armand Guillaumin'),
     'painter10': Painter(u'Gustave Caillebotte'),
-    'painter11': Painter(u'Georges Seurat')
+    'painter11': Painter(u'Georges Seurat'),
+
+    'painter12': Painter(u'Francisco de Zurbarán')
 }
 
 
@@ -30,6 +32,8 @@ paintings = [
     Painting(painters['painter3'], u'Chez le père Lathuille', 'at-father-lathuille.jpg'),
     Painting(painters['painter4'], u'Le Déjeuner sur l’herbe', 'Monet_dejeunersurlherbe.jpg'),
     Painting(painters['painter4'], u'The Cliffs at Etretat', 'Claude_Monet_The_Cliffs_at_Etretat.jpg'),
+
+    Painting(painters['painter12'], u'Santa Lucía de Siracusa', 'zurbaran_lucia.jpg'),
 ]
 
 
@@ -39,6 +43,5 @@ for painter in painters.values():
 for painting in paintings:
     db.session.add(painting)
 
-add_user('DUMMY', 'DUMMY')
 
 db.session.commit()
