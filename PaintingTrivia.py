@@ -65,7 +65,7 @@ def login():
         password_aux = request.form['password']
         if username_aux and password_aux:
             # Check if the username exists
-            retrieved_users = User.query.filter(User.name == username_aux).first()
+            retrieved_users = User.query.filter(User.name == username_aux).all()
             if retrieved_users:
                 # Check if the password is correct
                 if users.check_user_password(username_aux, password_aux):
@@ -89,7 +89,7 @@ def register():
         username_aux = request.form['username']
         password_aux = request.form['password']
         if username_aux and password_aux:
-            retrieved_users = User.query.filter(User.name == username_aux).first()
+            retrieved_users = User.query.filter(User.name == username_aux).all()
             if retrieved_users:
                 # Check if the password is correct
                 flash('User already exists', 'error')
@@ -130,13 +130,14 @@ def guess_the_painter():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
-    painters = Painter.query.order_by(func.random()).limit(4).all()
+    while True:
+        painters = Painter.query.order_by(func.random()).limit(4).all()
+        selected_painter = random.choice(painters)
+        selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
+            1).first()
+        if selected_painting:
+            break
 
-    selected_painter = random.choice(painters)
-    print Painting.painter, selected_painter
-    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-        1).first()
-    print selected_painting
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_painter.html',
                            painters=painters,
@@ -158,11 +159,10 @@ def guess_the_saint():
         session[key] += 1
 
     painters = Painter.query.order_by(func.random()).limit(4).all()
-
     selected_painter = random.choice(painters)
 
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-        1).first()
+        1).all()
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_saint.html',
                            painters=painters,
