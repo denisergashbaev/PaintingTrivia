@@ -108,8 +108,45 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/play', methods=['GET', 'POST'])
-def show_entries():
+@app.route('/main_menu', methods=['GET', 'POST'])
+def main_menu():
+    if request.method == 'POST':
+        x = layout_buttons(request)
+        if x:
+            return x
+    return render_template('main_menu.html')
+
+
+@app.route('/guessthepainter', methods=['GET', 'POST'])
+def guess_the_painter():
+    # if the request is sent from a form
+    if request.method == 'POST':
+        x = layout_buttons(request)
+        if x:
+            return x
+        key = 'right_guesses' if int(request.form['chosen_painter']) == session[
+            'selected_painter_id'] else 'wrong_guesses'
+        session[key] += 1
+
+    while True:
+        painters = Painter.query.order_by(func.random()).limit(4).all()
+        selected_painter = random.choice(painters)
+        selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
+            1).first()
+        if selected_painting:
+            break
+
+    session['selected_painter_id'] = selected_painting.painter.id
+    return render_template('guess_the_painter.html',
+                           painters=painters,
+                           selected_painter=selected_painter,
+                           selected_painting=selected_painting,
+                           right_guesses=session['right_guesses'],
+                           wrong_guesses=session['wrong_guesses'])
+
+
+@app.route('/guessthesaint', methods=['GET', 'POST'])
+def guess_the_saint():
     # if the request is sent from a form
     if request.method == 'POST':
         x = layout_buttons(request)
@@ -120,11 +157,10 @@ def show_entries():
         session[key] += 1
 
     painters = Painter.query.order_by(func.random()).limit(4).all()
-
     selected_painter = random.choice(painters)
 
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-        1).one()
+        1).all()
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('show_entries.html',
                            painters=painters,
