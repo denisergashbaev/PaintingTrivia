@@ -13,14 +13,16 @@ def button_to_address(value):
     d = {
         'Login': login,
         'Register': register,
-        'Logout': logout
+        'Logout': logout,
+        'Guess the Saint': guess_the_saint,
+        'Guess the Painter': guess_the_painter
     }
     return d[value] if value in d.keys() else None
 
 
 def layout_buttons(request):
     if 'navigate_to' in request.form.keys():
-        assert request.form['navigate_to'] in ['Login', 'Register', 'Logout']
+        assert request.form['navigate_to'] in ['Login', 'Register', 'Logout', 'Guess the Saint', 'Guess the Painter']
         value = request.form['navigate_to']
         func = button_to_address(value)
         redirect_fun_name = func.__name__
@@ -39,7 +41,7 @@ def set_session():
 def index():
     if 'username' in session:
         # return 'Logged in as %s' % Markup.escape(session['username'])
-        return redirect(url_for('show_entries'))
+        return redirect(url_for('main_menu'))
     else:
         return redirect(url_for('menu'))
 
@@ -162,7 +164,7 @@ def guess_the_saint():
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
         1).all()
     session['selected_painter_id'] = selected_painting.painter.id
-    return render_template('show_entries.html',
+    return render_template('guess_the_saint.html',
                            painters=painters,
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
