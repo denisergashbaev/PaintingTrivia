@@ -5,26 +5,20 @@ from models.painter import Painter
 from models.painting import Painting
 from models.user import User
 from settings import app
-from database import users
 from settings import db
 
 
-def button_to_address(value):
-    d = {
-        'Login': login,
-        'Register': register,
-        'Logout': logout
-    }
-    return d[value] if value in d.keys() else None
+def valid_actions():
+    return [login.__name__, register.__name__, logout.__name__]
 
 
-def layout_buttons(request):
-    if 'navigate_to' in request.form.keys():
-        assert request.form['navigate_to'] in ['Login', 'Register', 'Logout']
-        value = request.form['navigate_to']
-        func = button_to_address(value)
-        redirect_fun_name = func.__name__
-        return redirect(url_for(redirect_fun_name))
+def layout_buttons():
+    try:
+        navigate_to = request.form['navigate_to']
+    except KeyError:
+        navigate_to = None
+    if navigate_to in valid_actions():
+        return redirect(url_for(navigate_to))
 
 
 @app.before_request
@@ -47,7 +41,7 @@ def index():
 @app.route('/main', methods=['GET', 'POST'])
 def menu():
     if request.method == 'POST':
-        x = layout_buttons(request)
+        x = layout_buttons()
         if x:
             return x
     return render_template('menu.html')
@@ -56,9 +50,10 @@ def menu():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        x = layout_buttons(request)
+        x = layout_buttons()
         if x:
             return x
+
         username_aux = request.form['username']
         password_aux = request.form['password']
         if username_aux and password_aux:
@@ -66,7 +61,7 @@ def login():
             retrieved_users = User.query.filter(User.name == username_aux).all()
             if retrieved_users:
                 # Check if the password is correct
-                if users.check_user_password(username_aux, password_aux):
+                if User.check_user_password(username_aux, password_aux):
                     session['username'] = username_aux
                     return redirect(url_for('index'))
                 else:
@@ -81,7 +76,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        x = layout_buttons(request)
+        x = layout_buttons()
         if x:
             return x
         username_aux = request.form['username']
@@ -94,7 +89,7 @@ def register():
             else:
                 # Add the user
                 session['username'] = username_aux
-                users.add_user(username_aux, password_aux)
+                User.add_user(username_aux, password_aux)
                 db.session.commit()
                 return redirect(url_for('index'))
     return render_template('register.html')
@@ -112,10 +107,15 @@ def logout():
 def show_entries():
     # if the request is sent from a form
     if request.method == 'POST':
-        x = layout_buttons(request)
+        x = layout_buttons()
         if x:
             return x
-        key = 'right_guesses' if int(request.form['chosen_painter']) == session[
+
+        try:
+            chosen_painter = int(request.form['chosen_painter'])
+        except KeyError:
+            chosen_painter = -1
+        key = 'right_guesses' if chosen_painter == session[
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
@@ -135,4 +135,8 @@ def show_entries():
 
 
 if __name__ == '__main__':
+    #run on the machine ip address (local network)
+    #http://stackoverflow.com/questions/7023052/flask-configure-dev-server-to-be-visible-across-the-network
+    #app.run(host='0.0.0.0')
+    #run on localhost
     app.run()

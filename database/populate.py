@@ -1,3 +1,4 @@
+from models.user import User
 from settings import db
 from models.painter import Painter
 from models.painting import Painting
@@ -26,5 +27,7 @@ for painter in painters.values():
 
 for painting in paintings:
     db.session.add(painting)
+
+User.add_user('test', 'test')
 
 db.session.commit()
