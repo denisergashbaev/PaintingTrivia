@@ -21,6 +21,7 @@ painters = {
 
     'painter12': Painter(u'Francisco de Zurbarán'),
     'painter13': Painter(u'Michelangelo Merisi da Caravaggio'),
+    'painter14': Painter(u'Emmanuel Tzanes'),
 
 }
 
@@ -36,6 +37,8 @@ paintings = [
     Painting(painters['painter12'], u'Santa Lucía de Siracusa', 'zurbaran_lucia.jpg'),
     Painting(painters['painter13'], u'San Jeroni Escribiendo', 'caravaggio_san_gerolamo.jpg'),
     Painting(painters['painter13'], u'Saint Denis\' Marthyr', 'martirio_s_denis.jpg'),
+    Painting(painters['painter14'], u'Saint Mark', 'Emmanuel_Tzane_Mark.jpg'),
+
 ]
 
 
