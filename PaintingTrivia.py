@@ -130,6 +130,7 @@ def guess_the_painter():
 
     while True:
         painters = Painter.query.order_by(func.random()).limit(4).all()
+
         selected_painter = random.choice(painters)
         selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
             1).first()
@@ -161,17 +162,19 @@ def guess_the_saint():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
-    while True:
-        painters = Painter.query.order_by(func.random()).limit(4).all()
-        selected_painter = random.choice(painters)
-        selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-            1).first()
-        if selected_painting:
-            break
+    # Select a painter who has at least a painting
+    selected_painter, selected_painting = db.session.query(Painter, Painting).filter(
+        Painter.id == Painting.painter_id).limit(1).first()
+
+    # Select three other painters
+    painters_list = Painter.query.filter(Painter.id != selected_painter.id).order_by(func.random()).limit(3).all()
+
+    painters_list.append(selected_painter)
+    random.shuffle(painters_list)
 
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_painter.html',
-                           painters=painters,
+                           painters=painters_list,
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
@@ -179,8 +182,8 @@ def guess_the_saint():
 
 
 if __name__ == '__main__':
-    #run on the machine ip address (local network)
-    #http://stackoverflow.com/questions/7023052/flask-configure-dev-server-to-be-visible-across-the-network
-    #app.run(host='0.0.0.0')
-    #run on localhost
+    # run on the machine ip address (local network)
+    # http://stackoverflow.com/questions/7023052/flask-configure-dev-server-to-be-visible-across-the-network
+    # app.run(host='0.0.0.0')
+    # run on localhost
     app.run()
