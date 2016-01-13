@@ -22,6 +22,7 @@ painters = {
     'painter12': Painter(u'Francisco de Zurbarán'),
     'painter13': Painter(u'Michelangelo Merisi da Caravaggio'),
     'painter14': Painter(u'Emmanuel Tzanes'),
+    'painter15': Painter(u'El greco'),
 
 }
 
@@ -38,7 +39,7 @@ paintings = [
     Painting(painters['painter13'], u'San Jeroni Escribiendo', 'caravaggio_san_gerolamo.jpg'),
     Painting(painters['painter13'], u'Saint Denis\' Marthyr', 'martirio_s_denis.jpg'),
     Painting(painters['painter14'], u'Saint Mark', 'Emmanuel_Tzane_Mark.jpg'),
-
+    Painting(painters['painter15'], u'Saint Luke', 'san_lucas_greco.jpg'),
 ]
 
 
@@ -49,6 +50,5 @@ for painting in paintings:
     db.session.add(painting)
 
 User.add_user('test', 'test')
-
 
 db.session.commit()
