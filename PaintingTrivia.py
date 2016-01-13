@@ -1,5 +1,6 @@
 import random
 from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
+from sqlalchemy.sql.expression import exists
 from sqlalchemy.sql.functions import func
 from models.painter import Painter
 from models.painting import Painting
@@ -128,14 +129,16 @@ def guess_the_painter():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
-    while True:
-        painters = Painter.query.order_by(func.random()).limit(4).all()
-
-        selected_painter = random.choice(painters)
-        selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-            1).first()
-        if selected_painting:
-            break
+    #http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
+    #the instructions below correspond to the following sql statement:
+    # SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
+    # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
+    # ORDER BY random() LIMIT 4
+    stmt = exists().where(Painter.id == Painting.painter_id)
+    painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painter = random.choice(painters)
+    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
+        1).first()
 
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_painter.html',
@@ -153,7 +156,6 @@ def guess_the_saint():
         x = layout_buttons()
         if x:
             return x
-
         try:
             chosen_painter = int(request.form['chosen_painter'])
         except KeyError:
