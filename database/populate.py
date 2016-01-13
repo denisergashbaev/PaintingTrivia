@@ -19,7 +19,9 @@ painters = {
     'painter10': Painter(u'Gustave Caillebotte'),
     'painter11': Painter(u'Georges Seurat'),
 
-    'painter12': Painter(u'Francisco de Zurbarán')
+    'painter12': Painter(u'Francisco de Zurbarán'),
+    'painter13': Painter(u'Michelangelo Merisi da Caravaggio'),
+
 }
 
 
@@ -32,6 +34,8 @@ paintings = [
     Painting(painters['painter4'], u'The Cliffs at Etretat', 'Claude_Monet_The_Cliffs_at_Etretat.jpg'),
 
     Painting(painters['painter12'], u'Santa Lucía de Siracusa', 'zurbaran_lucia.jpg'),
+    Painting(painters['painter13'], u'San Jeroni Escribiendo', 'caravaggio_san_gerolamo.jpg'),
+    Painting(painters['painter13'], u'Saint Denis\' Marthyr', 'martirio_s_denis.jpg'),
 ]
 
 
