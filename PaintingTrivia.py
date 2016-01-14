@@ -153,17 +153,18 @@ def guess_the_saint():
         x = layout_buttons()
         if x:
             return x
-
+        print '', request.form, session['selected_painter_id'],
         try:
             chosen_painter = int(request.form['chosen_painter'])
         except KeyError:
             chosen_painter = -1
+
         key = 'right_guesses' if chosen_painter == session[
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
     # Select a painter who has at least a painting
-    selected_painter, selected_painting = db.session.query(Painter, Painting).filter(
+    selected_painter, selected_painting = db.session.query(Painter, Painting).order_by(func.random()).filter(
         Painter.id == Painting.painter_id).limit(1).first()
 
     # Select three other painters
@@ -173,7 +174,7 @@ def guess_the_saint():
     random.shuffle(painters_list)
 
     session['selected_painter_id'] = selected_painting.painter.id
-    return render_template('guess_the_painter.html',
+    return render_template('guess_the_saint.html',
                            painters=painters_list,
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
