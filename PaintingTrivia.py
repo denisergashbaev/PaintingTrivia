@@ -144,7 +144,8 @@ def guess_the_painter():
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'])
+                           wrong_guesses=session['wrong_guesses'],
+                           username=session['username'])
 
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])
@@ -179,7 +180,8 @@ def guess_the_saint():
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'])
+                           wrong_guesses=session['wrong_guesses'],
+                           username=session['username'])
 
 
 if __name__ == '__main__':
