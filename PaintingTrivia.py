@@ -9,7 +9,7 @@ from settings import db
 
 
 def valid_actions():
-    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__]
+    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__,  main_menu.__name__]
 
 
 def layout_buttons():
