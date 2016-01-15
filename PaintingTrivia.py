@@ -1,6 +1,7 @@
 import random
 from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
 from sqlalchemy.sql.functions import func
+from sqlalchemy.sql.expression import exists
 from models.painter import Painter
 from models.painting import Painting
 from models.user import User
@@ -9,7 +10,8 @@ from settings import db
 
 
 def valid_actions():
-    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__,  main_menu.__name__]
+    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__,
+            main_menu.__name__]
 
 
 def layout_buttons():
@@ -128,15 +130,11 @@ def guess_the_painter():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
-    # Select a painter who has at least a painting
-    selected_painter, selected_painting = db.session.query(Painter, Painting).order_by(func.random()).filter(
-        Painter.id == Painting.painter_id).limit(1).first()
-
-    # Select three other painters
-    painters_list = Painter.query.filter(Painter.id != selected_painter.id).order_by(func.random()).limit(3).all()
-
-    painters_list.append(selected_painter)
-    random.shuffle(painters_list)
+    stmt = exists().where(Painter.id == Painting.painter_id)
+    painters_list = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painter = random.choice(painters_list)
+    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
+        1).first()
 
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_painter.html',
@@ -164,15 +162,11 @@ def guess_the_saint():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
-    # Select a painter who has at least a painting
-    selected_painter, selected_painting = db.session.query(Painter, Painting).order_by(func.random()).filter(
-        Painter.id == Painting.painter_id).limit(1).first()
-
-    # Select three other painters
-    painters_list = Painter.query.filter(Painter.id != selected_painter.id).order_by(func.random()).limit(3).all()
-
-    painters_list.append(selected_painter)
-    random.shuffle(painters_list)
+    stmt = exists().where(Painter.id == Painting.painter_id)
+    painters_list = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painter = random.choice(painters_list)
+    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
+        1).first()
 
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_saint.html',
