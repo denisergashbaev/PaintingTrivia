@@ -109,7 +109,7 @@ def main_menu():
         x = layout_buttons()
         if x:
             return x
-    return render_template('main_menu.html')
+    return render_template('main_menu.html', username=session['username'])
 
 
 @app.route('/guessthepainter', methods=['GET', 'POST'])
