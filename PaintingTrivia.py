@@ -174,7 +174,7 @@ def guess_the_saint():
     painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
     selected_painting = random.choice(painting_list)
 
-    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).all()[0]
+    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).first()
     selected_painter = selected_painter
 
     session['selected_painting_id'] = selected_painting.id
