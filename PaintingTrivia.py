@@ -1,5 +1,6 @@
 import random
 from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
+from sqlalchemy.sql.expression import exists
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.expression import exists
 from models.painter import Painter
@@ -130,9 +131,14 @@ def guess_the_painter():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
+    #http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
+    #the instructions below correspond to the following sql statement:
+    # SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
+    # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
+    # ORDER BY random() LIMIT 4
     stmt = exists().where(Painter.id == Painting.painter_id)
-    painters_list = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
-    selected_painter = random.choice(painters_list)
+    painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painter = random.choice(painters)
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
         1).first()
 
