@@ -1,5 +1,6 @@
 import random
 from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
+from sqlalchemy.sql.expression import exists
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.expression import exists
 from models.painter import Painter
@@ -121,24 +122,29 @@ def guess_the_painter():
         x = layout_buttons()
         if x:
             return x
+
         try:
             chosen_painter = int(request.form['chosen_painter'])
         except KeyError:
             chosen_painter = -1
-
         key = 'right_guesses' if chosen_painter == session[
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
+    #http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
+    #the instructions below correspond to the following sql statement:
+    # SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
+    # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
+    # ORDER BY random() LIMIT 4
     stmt = exists().where(Painter.id == Painting.painter_id)
-    painters_list = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
-    selected_painter = random.choice(painters_list)
+    painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painter = random.choice(painters)
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
         1).first()
 
     session['selected_painter_id'] = selected_painting.painter.id
     return render_template('guess_the_painter.html',
-                           painters=painters_list,
+                           painters=painters,
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
@@ -156,6 +162,7 @@ def guess_the_saint():
         try:
             chosen_painting = int(request.form['chosen_painting'])
         except KeyError:
+
             chosen_painting = -1
 
         key = 'right_guesses' if chosen_painting == session[
@@ -166,7 +173,9 @@ def guess_the_saint():
     stmt = exists().where(Painting.painter_id)
     painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
     selected_painting = random.choice(painting_list)
-    selected_painter = Painter.query.filter(Painter.id==selected_painting.painter_id).first()
+
+    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).all()[0]
+    selected_painter = selected_painter
 
     session['selected_painting_id'] = selected_painting.id
     return render_template('guess_the_saint.html',
