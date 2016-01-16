@@ -1,24 +1,25 @@
 {% extends "layout_logged_in.html" %}
 {% block body %}
-    <div>Statistics:</div>
-    <div>Right guesses: {{ right_guesses }}</div>
-    <div>Wrong guesses: {{ wrong_guesses }}</div>
-    <div>Who is this painting created by?</div>
+<div>Statistics:</div>
+<div>Right guesses: {{ right_guesses }}</div>
+<div>Wrong guesses: {{ wrong_guesses }}</div>
+<div>Who is this painting created by?</div>
 
-    <h2>{{ selected_painter.name }}</h2>
-    <center><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="400" height="400"
-             border="0"></center>
-    <div>Answers:</div>
+<h2>{{ selected_painter.name }}</h2>
+<center><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="400" height="400"
+    border="0">
+</center>
+<div>Answers:</div>
 
-    <form method="post">
-        <ul class="entries">
-            {% for painting in paintings %}
-                <input id="chosen_painting_{{ painting.id }}" type="radio" name="chosen_painting"
-                       value="{{ painting.id }}">
-                <label for="chosen_painting_{{ painting.id }}">{{ painting.title }}</label>
-                </br>
-            {% endfor %}
-        </ul>
-        <input type="submit" value="Submit"/>
-    </form>
+<form method="post">
+    <ul class="entries">
+        {% for painting in paintings %}
+        <button id="chosen_painting_{{ painting.id }}" type="submit" name="chosen_painting"
+                value="{{ painting.id }}">
+            {{ painting.title }}
+        </button>
+        <br/>
+        {% endfor %}
+    </ul>
+</form>
 {% endblock %}

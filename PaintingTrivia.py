@@ -164,19 +164,18 @@ def guess_the_saint():
         except KeyError:
 
             chosen_painting = -1
-        print chosen_painting,
+
         key = 'right_guesses' if chosen_painting == session[
             'selected_painting_id'] else 'wrong_guesses'
         session[key] += 1
 
+    # Select a painter who has at least a painting
     stmt = exists().where(Painting.painter_id)
     painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
     selected_painting = random.choice(painting_list)
 
-
-    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).all()[0]
+    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).first()
     selected_painter = selected_painter
-
 
     session['selected_painting_id'] = selected_painting.id
     return render_template('guess_the_saint.html',
