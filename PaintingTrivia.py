@@ -154,23 +154,24 @@ def guess_the_saint():
         if x:
             return x
         try:
-            chosen_painter = int(request.form['chosen_painter'])
+            chosen_painting = int(request.form['chosen_painting'])
         except KeyError:
-            chosen_painter = -1
-
-        key = 'right_guesses' if chosen_painter == session[
-            'selected_painter_id'] else 'wrong_guesses'
+            chosen_painting = -1
+        print chosen_painting,
+        key = 'right_guesses' if chosen_painting == session[
+            'selected_painting_id'] else 'wrong_guesses'
         session[key] += 1
 
-    stmt = exists().where(Painter.id == Painting.painter_id)
-    painters_list = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
-    selected_painter = random.choice(painters_list)
-    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-        1).first()
+    stmt = exists().where(Painting.painter_id)
+    painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painting = random.choice(painting_list)
 
-    session['selected_painter_id'] = selected_painting.painter.id
+    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).all()[0]
+    selected_painter = selected_painter
+
+    session['selected_painting_id'] = selected_painting.id
     return render_template('guess_the_saint.html',
-                           painters=painters_list,
+                           paintings=painting_list,
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
