@@ -40,6 +40,8 @@ paintings = [
     Painting(painters['painter13'], u'Saint Denis\' Marthyr', 'martirio_s_denis.jpg'),
     Painting(painters['painter14'], u'Saint Mark', 'Emmanuel_Tzane_Mark.jpg'),
     Painting(painters['painter15'], u'Saint Luke', 'san_lucas_greco.jpg'),
+    Painting(painters['painter13'], u'Inspiració de sant Mateo', 'inspiracion_de_san_mateo_caravaggio.jpg'),
+    Painting(painters['painter15'], u'Sant Joan Evangelista', 'san_Juan_Evangelista_el_greco.jpg'),
 ]
 
 
