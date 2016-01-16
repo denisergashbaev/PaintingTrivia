@@ -2,6 +2,7 @@ import random
 from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
 from sqlalchemy.sql.expression import exists
 from sqlalchemy.sql.functions import func
+from sqlalchemy.sql.expression import exists
 from models.painter import Painter
 from models.painting import Painting
 from models.user import User
@@ -10,7 +11,8 @@ from settings import db
 
 
 def valid_actions():
-    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__]
+    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__,
+            main_menu.__name__]
 
 
 def layout_buttons():
@@ -110,7 +112,7 @@ def main_menu():
         x = layout_buttons()
         if x:
             return x
-    return render_template('main_menu.html')
+    return render_template('main_menu.html', username=session['username'])
 
 
 @app.route('/guessthepainter', methods=['GET', 'POST'])
@@ -146,7 +148,8 @@ def guess_the_painter():
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'])
+                           wrong_guesses=session['wrong_guesses'],
+                           username=session['username'])
 
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])
@@ -157,30 +160,32 @@ def guess_the_saint():
         if x:
             return x
         try:
-            chosen_painter = int(request.form['chosen_painter'])
+            chosen_painting = int(request.form['chosen_painting'])
         except KeyError:
-            chosen_painter = -1
-        key = 'right_guesses' if chosen_painter == session[
-            'selected_painter_id'] else 'wrong_guesses'
+
+            chosen_painting = -1
+        print chosen_painting,
+        key = 'right_guesses' if chosen_painting == session[
+            'selected_painting_id'] else 'wrong_guesses'
         session[key] += 1
 
-    # Select a painter who has at least a painting
-    selected_painter, selected_painting = db.session.query(Painter, Painting).filter(
-        Painter.id == Painting.painter_id).limit(1).first()
+    stmt = exists().where(Painting.painter_id)
+    painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
+    selected_painting = random.choice(painting_list)
 
-    # Select three other painters
-    painters_list = Painter.query.filter(Painter.id != selected_painter.id).order_by(func.random()).limit(3).all()
 
-    painters_list.append(selected_painter)
-    random.shuffle(painters_list)
+    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).all()[0]
+    selected_painter = selected_painter
 
-    session['selected_painter_id'] = selected_painting.painter.id
-    return render_template('guess_the_painter.html',
-                           painters=painters_list,
+
+    session['selected_painting_id'] = selected_painting.id
+    return render_template('guess_the_saint.html',
+                           paintings=painting_list,
                            selected_painter=selected_painter,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'])
+                           wrong_guesses=session['wrong_guesses'],
+                           username=session['username'])
 
 
 if __name__ == '__main__':
