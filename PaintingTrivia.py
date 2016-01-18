@@ -5,6 +5,7 @@ from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.expression import exists
 from models.painter import Painter
 from models.painting import Painting
+from models.saint import Saint
 from models.user import User
 from settings import app
 from settings import db
