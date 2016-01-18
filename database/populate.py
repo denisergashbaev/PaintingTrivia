@@ -50,8 +50,7 @@ for painting in paintings.values():
 for saint in saints.values():
     db.session.add(saint)
 
-for saint,painting in relationship_saints_painting:
-    print saint, painting
+for saint, painting in relationship_saints_painting:
     saint.paintings.append(painting)
 
 User.add_user('test', 'test')
