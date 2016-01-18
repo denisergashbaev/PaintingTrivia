@@ -4,8 +4,7 @@ from settings import db
 class Painting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
-    #todo: make it unique later
-    file_name = db.Column(db.String(255))
+    file_name = db.Column(db.String(255), unique=True)
     painter_id = db.Column(db.Integer, db.ForeignKey('painter.id'))
     painter = db.relationship("Painter")
 
