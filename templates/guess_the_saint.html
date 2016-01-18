@@ -13,10 +13,10 @@
 
 <form method="post">
     <ul class="entries">
-        {% for painting in paintings %}
-        <button id="chosen_painting_{{ painting.id }}" type="submit" name="chosen_painting"
-                value="{{ painting.id }}">
-            {{ painting.title }}
+        {% for saint in saints_list %}
+        <button id="chosen_saint_{{ saint.id }}" type="submit" name="chosen_saint"
+                value="{{ saint.id }}">
+            {{ saint.name }}
         </button>
         <br/>
         {% endfor %}

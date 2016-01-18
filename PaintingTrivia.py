@@ -137,6 +137,7 @@ def guess_the_painter():
     # SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
     # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
     # ORDER BY random() LIMIT 4
+
     stmt = exists().where(Painter.id == Painting.painter_id)
     painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
     selected_painter = random.choice(painters)
@@ -161,27 +162,34 @@ def guess_the_saint():
         if x:
             return x
         try:
-            chosen_painting = int(request.form['chosen_painting'])
+            print request.form['chosen_saint']
+            chosen_painting = int(request.form['chosen_saint'])
         except KeyError:
 
             chosen_painting = -1
 
         key = 'right_guesses' if chosen_painting == session[
-            'selected_painting_id'] else 'wrong_guesses'
+            'selected_saint_id'] else 'wrong_guesses'
         session[key] += 1
 
     # Select a painter who has at least a painting
-    stmt = exists().where(Painting.painter_id)
-    painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
-    selected_painting = random.choice(painting_list)
+    # stmt = exists().where(Saint.paintings.any(id==Painting.id))
+    # painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
 
-    selected_painter = Painter.query.filter(Painter.id == selected_painting.painter_id).first()
-    selected_painter = selected_painter
+    saints_list = Saint.query.filter(Saint.paintings.any()).limit(4).all()
+    selected_saint = random.choice(saints_list)
 
-    session['selected_painting_id'] = selected_painting.id
+    print selected_saint
+    print selected_saint.id
+
+    selected_painting = Painting.query.filter(Painting.saints.any(id=selected_saint.id)).first()
+    print selected_painting
+
+    session['selected_saint_id'] = selected_saint.id
     return render_template('guess_the_saint.html',
-                           paintings=painting_list,
-                           selected_painter=selected_painter,
+                           saints_list=saints_list,
+                           selected_painter=selected_painting.painter,
+                           selected_saint=selected_saint,
                            selected_painting=selected_painting,
                            right_guesses=session['right_guesses'],
                            wrong_guesses=session['wrong_guesses'],
