@@ -1,8 +1,6 @@
 from settings import db
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
 
 paintings = db.Table('paintings',
                      db.Column('saint_id', db.Integer, db.ForeignKey('saint.id')),
