@@ -162,7 +162,6 @@ def guess_the_saint():
         if x:
             return x
         try:
-            print request.form['chosen_saint']
             chosen_painting = int(request.form['chosen_saint'])
         except KeyError:
 
@@ -179,11 +178,7 @@ def guess_the_saint():
     saints_list = Saint.query.filter(Saint.paintings.any()).limit(4).all()
     selected_saint = random.choice(saints_list)
 
-    print selected_saint
-    print selected_saint.id
-
     selected_painting = Painting.query.filter(Painting.saints.any(id=selected_saint.id)).first()
-    print selected_painting
 
     session['selected_saint_id'] = selected_saint.id
     return render_template('guess_the_saint.html',

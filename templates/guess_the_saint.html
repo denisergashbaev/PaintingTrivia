@@ -11,15 +11,39 @@
 </center>
 <div>Answers:</div>
 
-<form method="post">
+<form method="post" id="saint_form_id">
     <ul class="entries">
         {% for saint in saints_list %}
-        <button id="chosen_saint_{{ saint.id }}" type="submit" name="chosen_saint"
-                value="{{ saint.id }}">
+        <button id="chosen_saint_{{ saint.id }}" type="button" name="chosen_saint"
+                value="{{ saint.id }}"  onclick="setColor(this,'{{saint.id}}', '{{selected_saint.id}}')">
             {{ saint.name }}
         </button>
         <br/>
         {% endfor %}
     </ul>
 </form>
+<script>
+    function setColor(btn, correct, current) {
+        var correct = parseInt(correct)
+        var current = parseInt(current)
+        form = document.getElementById("saint_form_id");
+        if (correct == current) {
+            btn.style.backgroundColor ="#00ff00";
+            setTimeout(function changeButton(){
+                btn.style.backgroundColor ="#ffffff";
+                btn.innerHtml = "Correct";
+                form.submit()
+            },500)
+        }
+        else {
+            btn.style.backgroundColor ="#ff0000";
+            setTimeout(function changeButton(){
+                btn.style.backgroundColor ="#ffffff";
+                btn.innerHtml = "Incorrect";
+                form.submit()
+            },500)
+        }
+    }
+
+</script>
 {% endblock %}
