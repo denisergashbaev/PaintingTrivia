@@ -58,15 +58,16 @@ saints = {
 
 }
 
-relationship_saints_painting = [
-    [saints['saint1'], paintings['painting11']],
-    [saints['saint2'], paintings['painting10']],
-    [saints['saint3'], paintings['painting13']],
-    [saints['saint4'], paintings['painting12']],
-    [saints['saint5'], paintings['painting9']],
-    [saints['saint6'], paintings['painting8']],
-    [saints['saint7'], paintings['painting7']],
-]
+
+# Relationship saints to painting:
+saints['saint1'].paintings.extend([paintings['painting11']])
+saints['saint2'].paintings.extend([paintings['painting10']])
+saints['saint3'].paintings.extend([paintings['painting13']])
+saints['saint4'].paintings.extend([paintings['painting12']])
+saints['saint5'].paintings.extend([paintings['painting9']])
+saints['saint6'].paintings.extend([paintings['painting8']])
+saints['saint7'].paintings.extend([paintings['painting7']])
+
 
 for painter in painters.values():
     db.session.add(painter)
@@ -77,8 +78,6 @@ for painting in paintings.values():
 for saint in saints.values():
     db.session.add(saint)
 
-for saint, painting in relationship_saints_painting:
-    saint.paintings.append(painting)
 
 User.add_user('test', 'test')
 
