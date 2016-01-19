@@ -16,7 +16,7 @@
     <form method="post" id="painter_form_id">
         <ul class="entries">
             {% for painter in painters %}
-                <button type="submit" name="chosen_painter"
+                <button type="button" name="chosen_painter"
                         value="{{ painter.id }}"
                         onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
                     {{ painter.name }}

@@ -15,11 +15,10 @@ var app = (function () {
                 //http://stackoverflow.com/questions/4605671/jquery-submit-doesnt-include-submitted-button
                 btn.appendTo(form);
                 form.submit();
-            }, 5000);
+            }, 500);
         }
 
         s(correct_id == btn.val() ? "#00ff00" : "#ff0000");
-        return false;
     };
 
     return app;
