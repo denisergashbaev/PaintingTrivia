@@ -6,43 +6,23 @@
     <div>Who is this painting created by?</div>
 
     <h2>{{ selected_painting.title }}</h2>
-    <center><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="400" height="400"
-             border="0"></center>
+
+    <div class="painting"><img class="painting"
+                               src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
+                               border="0">
+    </div>
     <div>Answers:</div>
 
     <form method="post" id="painter_form_id">
         <ul class="entries">
             {% for painter in painters %}
-                <button id="chosen_painter_{{ painter.id }}" type="button" name="chosen_painter"
-                       value="{{ painter.id }}" onclick="setColor(this,'{{painter.id}}', '{{selected_painter.id}}')">
-               {{ painter.name }}
-                    </button>
+                <button type="submit" name="chosen_painter"
+                        value="{{ painter.id }}"
+                        onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
+                    {{ painter.name }}
+                </button>
                 <br/>
             {% endfor %}
         </ul>
     </form>
-<script>
-    function setColor(btn, correct, current) {
-        var correct = parseInt(correct)
-        var current = parseInt(current)
-        form = document.getElementById("painter_form_id");
-        if (correct == current) {
-            btn.style.backgroundColor ="#00ff00";
-            setTimeout(function changeButton(){
-                btn.style.backgroundColor ="#ffffff";
-                btn.innerHtml = "Correct";
-                form.submit()
-            },500)
-        }
-        else {
-            btn.style.backgroundColor ="#ff0000";
-            setTimeout(function changeButton(){
-                btn.style.backgroundColor ="#ffffff";
-                btn.innerHtml = "Incorrect";
-                form.submit()
-            },500)
-        }
-    }
-
-</script>
 {% endblock %}

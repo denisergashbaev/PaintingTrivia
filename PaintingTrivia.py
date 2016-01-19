@@ -165,7 +165,6 @@ def guess_the_saint():
         try:
             chosen_painting = int(request.form['chosen_saint'])
         except KeyError:
-
             chosen_painting = -1
 
         key = 'right_guesses' if chosen_painting == session[
