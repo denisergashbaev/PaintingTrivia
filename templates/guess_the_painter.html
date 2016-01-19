@@ -1,24 +1,46 @@
 {% extends "layout_logged_in.html" %}
 {% block body %}
-    <div>Statistics:</div>
-    <div>Right guesses: {{ right_guesses }}</div>
-    <div>Wrong guesses: {{ wrong_guesses }}</div>
-    <div>Who is this painting created by?</div>
+    <body>
+    <div class="page">
+        <h2>Hello there, {{ username }}</h2>
 
-    <h2>{{ selected_painting.title }}</h2>
-    <center><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="400" height="400"
-             border="0"></center>
-    <div>Answers:</div>
+        <form method="post">
+            <p>
+                <button type="submit" name="navigate_to" value="logout">Logout</button>
+            <p>
+                <button type="submit" name="navigate_to" value="main_menu">Back to menu</button>
+        </form>
+    </div>
+    <div class="page">
+        <h1>PaintingTrivia</h1>
+        {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+        <div>Statistics:</div>
+        <div>Right guesses: {{ right_guesses }}</div>
+        <div>Wrong guesses: {{ wrong_guesses }}</div>
+        <div>Who is this painting created by?</div>
 
-    <form method="post">
-        <ul class="entries">
-            {% for painter in painters %}
-                <input id="chosen_painter_{{ painter.id }}" type="radio" name="chosen_painter"
-                       value="{{ painter.id }}">
-                <label for="chosen_painter_{{ painter.id }}">{{ painter.name }}</label>
-                <br/>
-            {% endfor %}
-        </ul>
-        <input type="submit" value="Submit"/>
-    </form>
+        <h2>{{ selected_painting.title }}</h2>
+
+        <div class="painting"><img class="painting"
+                                   src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
+                                   border="0">
+        </div>
+        <div>Answers:</div>
+
+        <form method="post" id="painter_form_id">
+            <ul class="entries">
+                {% for painter in painters %}
+                    <button type="submit" name="chosen_painter"
+                            value="{{ painter.id }}"
+                            onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
+                        {{ painter.name }}
+                    </button>
+                    <br/>
+                {% endfor %}
+            </ul>
+        </form>
+    </div>
+    </body>
 {% endblock %}
