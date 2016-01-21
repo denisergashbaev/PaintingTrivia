@@ -15,7 +15,7 @@
     <ul class="entries">
         {% for saint in saints_list %}
         <button id="chosen_saint_{{ saint.id }}" type="button" name="chosen_saint"
-                value="{{ saint.id }}"  onclick="setColor(this,'{{saint.id}}', '{{selected_saint.id}}')">
+                value="{{ saint.id }}"  onclick="app.submitGuess(this, {{ selected_saint.id }})">
             {{ saint.name }}
         </button>
         <br/>

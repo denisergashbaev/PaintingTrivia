@@ -141,7 +141,6 @@ def guess_the_painter():
     stmt = exists().where(Painter.id == Painting.painter_id)
     painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
     selected_painter = random.choice(painters)
-    print painters
     selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
         1).first()
 
