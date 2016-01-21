@@ -19,7 +19,7 @@
             {% for painter in painters %}
                 <button type="button" name="chosen_painter"
                         value="{{ painter.id }}"
-                        onclick="app.submitGuess(this, {{ selected_painter.id }})">
+                        onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
                     {{ painter.name }}
                 </button>
                 <br/>

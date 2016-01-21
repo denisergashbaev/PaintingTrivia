@@ -3,21 +3,27 @@
 
 var app = (function () {
     var app = {};
-    app.submitGuess = function (btn, correct_id) {
-        var btn = $(btn)
 
-        // Create a new form
-        var form = $(document.createElement('form'));
-        $(form).attr("method", "POST");
-        var input = $("<input>").attr("type", "hidden").attr("name", btn[0].name).val(btn.val());
-        $(form).append($(input));
-        function s(bc1) {
-            btn.css('backgroundColor', bc1);
-            setTimeout(function () {$(form).submit();},500);
+    app.submitGuess = function (btn, form, correct_id) {
+        var btn = $(btn);
+        var form = $(form);
+        //create hidden el: http://stackoverflow.com/questions/2408043/jquery-create-hidden-form-element-on-the-fly
+        // extend form
+        $('<input>').attr({
+            type: 'hidden',
+            name: btn.prop('name'),
+            value: btn.val()
+        }).appendTo(form);
+        function s(bc) {
+            btn.css('backgroundColor', bc);
+            setTimeout(function () {
+                form.submit();
+            }, 500);
         }
+
         s(correct_id == btn.val() ? "#00ff00" : "#ff0000");
-        return false;
     };
+
     return app;
 }()
     );
