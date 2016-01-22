@@ -6,19 +6,24 @@
     <div>Who is this painting created by?</div>
 
     <h2>{{ selected_painting.title }}</h2>
-    <center><img src={{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }} width="400" height="400"
-             border="0"></center>
+
+    <div class="painting"><img class="painting"
+                               src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
+                               border="0">
+    </div>
     <div>Answers:</div>
 
-    <form method="post">
+
+    <form method="post" id="painter_form_id">
         <ul class="entries">
             {% for painter in painters %}
-                <input id="chosen_painter_{{ painter.id }}" type="radio" name="chosen_painter"
-                       value="{{ painter.id }}">
-                <label for="chosen_painter_{{ painter.id }}">{{ painter.name }}</label>
+                <button type="button" name="chosen_painter"
+                        value="{{ painter.id }}"
+                        onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
+                    {{ painter.name }}
+                </button>
                 <br/>
             {% endfor %}
         </ul>
-        <input type="submit" value="Submit"/>
     </form>
 {% endblock %}
