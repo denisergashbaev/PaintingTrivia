@@ -1,13 +1,22 @@
 {% extends "layout.html" %}
 {% block body %}
     <body>
-    <header>Login</header>
-    <form name="form" method="post" action="">
-        <p><input type="text" name="username">
+        <div class="page">
+            <h1>PaintingTrivia</h1>
 
-        <p><input type="text" name="password">
+            <div class="metanav">
+            </div>
+            {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+            <header>Login</header>
+            <form name="form" method="post" action="">
+                <p><input type="text" name="username">
 
-        <p><input type="submit" name="submit_form" value="Login">
-    </form>
+                <p><input type="text" name="password">
+
+                <p><input type="submit" name="submit_form" value="Login">
+            </form>
+        </div>
     </body>
 {% endblock %}
