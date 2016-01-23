@@ -7,7 +7,6 @@ from models.painting import Painting
 from models.saint import Saint
 
 
-
 db.create_all()
 
 painters = {
@@ -79,6 +78,7 @@ saints['saint7'].paintings.extend([paintings['painting7']])
 
 # Relationship painter to artistic movement
 painters['painter1'].artistic_movements.extend([artistic_movements['artistic_movement_2']])
+
 
 for painter in painters.values():
     db.session.add(painter)

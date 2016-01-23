@@ -2,14 +2,18 @@
 <html>
 <head>
     <title>PaintingTrivia</title>
-    <div class="page">
-        <form method="post">
-            <p>
-                <button type="submit" name="navigate_to" value="login">Login</button>
-            <p>
-                <button type="submit" name="navigate_to" value="register">Register</button>
-        </form>
-    </div>
+    {% if not 'username' in session %}
+        <div class="page">
+            <form method="post">
+                <p><button type="submit" name="navigate_to" value="login">Login</button></p>
+
+                <p><button type="submit" name="navigate_to" value="register">Register</button></p>
+
+            </form>
+        </div>
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/libs/jquery-2.2.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app/app.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 {% block body %}{% endblock %}
