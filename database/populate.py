@@ -4,7 +4,6 @@ from settings import db
 from models.painter import Painter
 from models.painting import Painting
 from models.saint import Saint
-from models.artistic_movement import ArtisticMovement
 
 
 db.create_all()
@@ -60,13 +59,6 @@ saints = {
 
 }
 
-artistic_movements = {
-    'artistic_movement_1': ArtisticMovement('Impressionism'),
-    'artistic_movement_2': ArtisticMovement('Post-Impressionism'),
-    'artistic_movement_3': ArtisticMovement('Baroque'),
-    'artistic_movement_4': ArtisticMovement('Romanticism'),
-}
-
 # Relationship saints to painting:
 saints['saint1'].paintings.extend([paintings['painting11']])
 saints['saint2'].paintings.extend([paintings['painting10']])
@@ -76,8 +68,7 @@ saints['saint5'].paintings.extend([paintings['painting9']])
 saints['saint6'].paintings.extend([paintings['painting8']])
 saints['saint7'].paintings.extend([paintings['painting7']])
 
-# Relationship painter to artistic movement
-painters['painter1'].artistic_movements['artistic_movement_2']
+
 
 for painter in painters.values():
     db.session.add(painter)
