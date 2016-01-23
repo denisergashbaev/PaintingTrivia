@@ -1,13 +1,20 @@
 {% extends "layout.html" %}
 {% block body %}
-<head>
-    <meta charset="UTF-8">
-    <title>TriviArt</title>
-</head>
-<body>
-    <header>Login</header>
-        <form method="post">
-            <p><button type="submit" name="navigate_to" value="login">Login</button>
-            <p><button type="submit" name="navigate_to" value="register">Register</button>
-        </form>
+    <body>
+        <div class="page">
+            <h1>PaintingTrivia</h1>
+
+            <div class="metanav">
+            </div>
+            {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+
+            <form method="post">
+                <p><button type="submit" name="navigate_to" value="login">Login</button></p>
+
+                <p><button type="submit" name="navigate_to" value="register">Register</button></p>
+            </form>
+        </div>
+    </body>
 {% endblock %}

@@ -1,13 +1,15 @@
-{% extends "layout_logged_in.html" %}
+{% extends "layout.html" %}
 {% block body %}
-<head>
-    <meta charset="UTF-8">
-    <title>TriviArt</title>
-</head>
 <body>
-    <header>Choose the Game</header>
+    {% include "login_register_segment.html"%}
+    <div class="page">
         <form method="post">
-            <p><button type="submit" name="navigate_to" value="guess_the_saint">Guess the Saint</button>
-            <p><button type="submit" name="navigate_to" value="guess_the_painter">Guess the Painter</button>
+            <p><button type="submit" name="navigate_to" value="guess_the_saint">Guess the Saint</button></p>
+
+            <p><button type="submit" name="navigate_to" value="guess_the_painter">Guess the Painter</button></p>
         </form>
+    </div>
+</body>
 {% endblock %}
+
+

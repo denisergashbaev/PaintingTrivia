@@ -5,6 +5,7 @@ from models.painter import Painter
 from models.painting import Painting
 from models.saint import Saint
 
+
 db.create_all()
 
 painters = {
@@ -58,7 +59,6 @@ saints = {
 
 }
 
-
 # Relationship saints to painting:
 saints['saint1'].paintings.extend([paintings['painting11']])
 saints['saint2'].paintings.extend([paintings['painting10']])
@@ -67,6 +67,7 @@ saints['saint4'].paintings.extend([paintings['painting12']])
 saints['saint5'].paintings.extend([paintings['painting9']])
 saints['saint6'].paintings.extend([paintings['painting8']])
 saints['saint7'].paintings.extend([paintings['painting7']])
+
 
 
 for painter in painters.values():
