@@ -2,9 +2,9 @@ from settings import db
 from sqlalchemy.orm import relationship, backref
 
 
-artistic_movements = db.Table('artistic_movement',
+artistic_movements = db.Table('artistic_movements',
     db.Column('painter_id', db.Integer, db.ForeignKey('painter.id')),
-    db.Column('artisticmovement_id', db.Integer, db.ForeignKey('artisticmovement.id'))
+    db.Column('artistic_movement_id', db.Integer, db.ForeignKey('artistic_movement.id'))
 )
 
 

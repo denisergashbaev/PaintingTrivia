@@ -1,10 +1,11 @@
 # coding=utf-8
 from models.user import User
 from settings import db
+from models.artistic_movement import ArtisticMovement
 from models.painter import Painter
 from models.painting import Painting
 from models.saint import Saint
-from models.artistic_movement import ArtisticMovement
+
 
 
 db.create_all()
@@ -77,7 +78,7 @@ saints['saint6'].paintings.extend([paintings['painting8']])
 saints['saint7'].paintings.extend([paintings['painting7']])
 
 # Relationship painter to artistic movement
-painters['painter1'].artistic_movements['artistic_movement_2']
+painters['painter1'].artistic_movements.extend([artistic_movements['artistic_movement_2']])
 
 for painter in painters.values():
     db.session.add(painter)
