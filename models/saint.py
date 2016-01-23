@@ -5,7 +5,6 @@ from sqlalchemy.orm import relationship, backref
 paintings = db.Table('paintings',
                      db.Column('saint_id', db.Integer, db.ForeignKey('saint.id')),
                      db.Column('painting_id', db.Integer, db.ForeignKey('painting.id'))
-
                      )
 
 
