@@ -1,16 +1,7 @@
 {% extends "layout_logged_in.html" %}
 {% block body %}
-    <body>
-    <div class="page">
-        <h2>Hello there, {{ username }}</h2>
-
-        <form method="post">
-            <p>
-                <button type="submit" name="navigate_to" value="logout">Logout</button>
-            <p>
-                <button type="submit" name="navigate_to" value="main_menu">Back to menu</button>
-        </form>
-    </div>
+<body>
+    {% include "login_register_segment.html"%}
     <div class="page">
         <h1>PaintingTrivia</h1>
         {% for message in get_flashed_messages() %}
@@ -42,5 +33,5 @@
             </ul>
         </form>
     </div>
-    </body>
+</body>
 {% endblock %}
