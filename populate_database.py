@@ -89,6 +89,9 @@ for painting in paintings.values():
 for saint in saints.values():
     db.session.add(saint)
 
+for artistic_movement in artistic_movements.values():
+    db.session.add(artistic_movement)
+
 
 User.add_user('test', 'test')
 
