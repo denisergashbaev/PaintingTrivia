@@ -8,5 +8,5 @@ pip install -r requirements.txt
 ```
 # Install sqlite3 database
 ```
-Unix: sudo apt-get install sqlite3 libsqlite3-dev
+Ubuntu: sudo apt-get install sqlite3 libsqlite3-dev
 ```
