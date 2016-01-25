@@ -3,6 +3,7 @@ from flask import request, session, render_template, Markup, redirect, url_for, 
 from sqlalchemy.sql.expression import exists
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.expression import exists
+from models.artistic_movement import ArtisticMovement
 from models.painter import Painter
 from models.painting import Painting
 from models.saint import Saint
