@@ -60,7 +60,7 @@ saints = {
 
 }
 
-artistic_movements = {
+artistic_movements_dict = {
     'artistic_movement_1': ArtisticMovement('Impressionism'),
     'artistic_movement_2': ArtisticMovement('Post-Impressionism'),
     'artistic_movement_3': ArtisticMovement('Baroque'),
@@ -77,7 +77,7 @@ saints['saint6'].paintings.extend([paintings['painting8']])
 saints['saint7'].paintings.extend([paintings['painting7']])
 
 # Relationship painter to artistic movement
-painters['painter1'].artistic_movements.extend([artistic_movements['artistic_movement_2']])
+painters['painter1'].artistic_movements.extend([artistic_movements_dict['artistic_movement_2']])
 
 
 for painter in painters.values():
@@ -89,7 +89,7 @@ for painting in paintings.values():
 for saint in saints.values():
     db.session.add(saint)
 
-for artistic_movement in artistic_movements.values():
+for artistic_movement in artistic_movements_dict.values():
     db.session.add(artistic_movement)
 
 
