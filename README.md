@@ -15,7 +15,8 @@ sudo apt-get install sqlite3 libsqlite3-dev
 
 # Populate the database:
 ```
-export PYTHONPATH=${PYTHONPATH}
+cd PaintingTrivia
+export PYTHONPATH=${PYTHONPATH}:.
 python database/populate.py
 ```
 # Run the project:
