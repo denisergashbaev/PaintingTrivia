@@ -132,12 +132,6 @@ def guess_the_painter():
             'selected_painter_id'] else 'wrong_guesses'
         session[key] += 1
 
-    #http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
-    #the instructions below correspond to the following sql statement:
-    # SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
-    # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
-    # ORDER BY random() LIMIT 4
-
     stmt = exists().where(Painter.id == Painting.painter_id)
     painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
     selected_painter = random.choice(painters)
@@ -170,10 +164,6 @@ def guess_the_saint():
             'selected_saint_id'] else 'wrong_guesses'
         session[key] += 1
 
-    # Select a painter who has at least a painting
-    # stmt = exists().where(Saint.paintings.any(id==Painting.id))
-    # painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
-
     saints_list = Saint.query.filter(Saint.paintings.any()).limit(4).all()
     selected_saint = random.choice(saints_list)
 
@@ -191,8 +181,4 @@ def guess_the_saint():
 
 
 if __name__ == '__main__':
-    # run on the machine ip address (local network)
-    # http://stackoverflow.com/questions/7023052/flask-configure-dev-server-to-be-visible-across-the-network
-    # app.run(host='0.0.0.0')
-    # run on localhost
     app.run()
