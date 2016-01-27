@@ -7,6 +7,9 @@ from models.painting import Painting
 from models.saint import Saint
 
 
+# Drops all of the tables if they exist.
+db.drop_all()
+
 db.create_all()
 
 painters = {
