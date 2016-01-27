@@ -36,7 +36,6 @@ def set_session():
 @app.route('/')
 def index():
     if 'username' in session:
-        # return 'Logged in as %s' % Markup.escape(session['username'])
         return redirect(url_for('main_menu'))
     else:
         return redirect(url_for('menu'))
