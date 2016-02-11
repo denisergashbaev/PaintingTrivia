@@ -9,6 +9,8 @@ from models.saint import Saint
 from models.user import User
 from settings import app
 from settings import db
+import PainterQuiz
+import pickle
 
 
 def valid_actions():
@@ -25,12 +27,15 @@ def layout_buttons():
         return redirect(url_for(navigate_to))
 
 
+def initialize_quiz():
+    if 'quiz' not in session:
+        session['quiz'] = None
+
+
 @app.before_request
 def set_session():
     # initialize the points in the user session
-    if 'right_guesses' not in session:
-        session['right_guesses'] = 0
-        session['wrong_guesses'] = 0
+    initialize_quiz()
 
 
 @app.route('/')
@@ -115,6 +120,21 @@ def main_menu():
     return render_template('main_menu.html', username=session['username'])
 
 
+@app.route('/results', methods=['GET', 'POST'])
+def show_quiz_results():
+    if request.method == 'POST':
+        # Clear session
+        session.pop('quiz')
+        x = layout_buttons()
+        if x:
+            return x
+    quiz = pickle.loads(session['quiz'])
+    return render_template('show_quiz_results.html',
+                           right_guesses=sum(quiz.score),
+                           wrong_guesses=len(quiz.score) - sum(quiz.score),
+                           username=session['username'])
+
+
 @app.route('/guessthepainter', methods=['GET', 'POST'])
 def guess_the_painter():
     # if the request is sent from a form
@@ -124,27 +144,48 @@ def guess_the_painter():
             return x
 
         try:
-            chosen_painter = int(request.form['chosen_painter'])
+            quiz = pickle.loads(session['quiz'])
+            chosen_painter_id = int(request.form['chosen_painter'])
+            question = quiz.current_question
+            quiz.process_answer(question, chosen_painter_id == question.correct_option.id)
+            session['quiz'] = pickle.dumps(quiz)
         except KeyError:
-            chosen_painter = -1
-        key = 'right_guesses' if chosen_painter == session[
-            'selected_painter_id'] else 'wrong_guesses'
-        session[key] += 1
+            print "Something failed"
 
-    stmt = exists().where(Painter.id == Painting.painter_id)
-    painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
-    selected_painter = random.choice(painters)
-    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-        1).first()
+    if session['quiz'] is None:
+        # Obtain the painters and the paintings randomly
+        selected_painters, selected_paintings = initialize_images(num_painters=10)
+        quiz = PainterQuiz.ImageQuiz(selected_paintings, selected_painters)
+        session['quiz'] = pickle.dumps(quiz)
+    else:
+        quiz = pickle.loads(session['quiz'])
 
-    session['selected_painter_id'] = selected_painting.painter.id
+    # If all of the images have been seen, show again, the incorrect ones
+
+    question = quiz.next_question()
+
+    session['quiz'] = pickle.dumps(quiz)
+    if not question:
+        return redirect(url_for('show_quiz_results'))
+
     return render_template('guess_the_painter.html',
-                           painters=painters,
-                           selected_painter=selected_painter,
-                           selected_painting=selected_painting,
-                           right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'],
+                           painters=question.option_list,
+                           selected_painter=question.correct_option,
+                           selected_painting=question.element,
+                           right_guesses=sum(quiz.score),
+                           wrong_guesses=len(quiz.score) - sum(quiz.score),
                            username=session['username'])
+
+
+def initialize_images(num_painters=10):
+    stmt = exists().where(Painter.id == Painting.painter_id)
+    selected_painters = Painter.query.filter(stmt).order_by(func.random()).limit(10).all()
+
+    selected_paintings = []
+    for painter in selected_painters:
+        paintings_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(1).all()
+        selected_paintings.extend(paintings_aux)
+    return list(set(selected_painters)), selected_paintings
 
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])
@@ -163,6 +204,7 @@ def guess_the_saint():
             'selected_saint_id'] else 'wrong_guesses'
         session[key] += 1
 
+    # if session['right_guesses']
     saints_list = Saint.query.filter(Saint.paintings.any()).limit(4).all()
     selected_saint = random.choice(saints_list)
 
