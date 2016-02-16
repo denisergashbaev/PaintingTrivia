@@ -1,37 +1,37 @@
 {% extends "layout.html" %}
 {% block body %}
 <body>
-    {% include "login_register_segment.html"%}
-    <div class="page">
-        <h1>PaintingTrivia</h1>
-        {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-        {% endfor %}
-        <div>Statistics:</div>
-        <div>Right guesses: {{ right_guesses }}</div>
-        <div>Wrong guesses: {{ wrong_guesses }}</div>
-        <div>Who is this painting created by?</div>
+{% include "login_register_segment.html"%}
+<div class="page">
+    <h1>PaintingTrivia</h1>
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    <div>Statistics:</div>
+    <div>Right guesses: {{ right_guesses }}</div>
+    <div>Wrong guesses: {{ wrong_guesses }}</div>
+    <div>Who is this painting created by?</div>
 
-        <h2>{{ selected_painting.title }}</h2>
+    <h2>{{ selected_painting.title }}</h2>
 
-        <div class="painting"><img class="painting"
-                                   src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
-                                   border="0">
-        </div>
-        <div>Answers:</div>
-
-        <form method="post" id="painter_form_id">
-            <ul class="entries">
-                {% for painter in painters %}
-                    <button type="button" name="chosen_painter"
-                            value="{{ painter.id }}"
-                            onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
-                        {{ painter.name }}
-                    </button>
-                    <br/>
-                {% endfor %}
-            </ul>
-        </form>
+    <div class="painting"><img class="painting"
+                               src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
+                               border="0">
     </div>
+    <div>Answers:</div>
+
+    <form method="post" id="painter_form_id">
+        <ul class="entries">
+            {% for painter in painters %}
+            <button type="button" name="chosen_painter"
+                    value="{{ painter.id }}"
+                    onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
+                {{ painter.name }}
+            </button>
+            <br/>
+            {% endfor %}
+        </ul>
+    </form>
+</div>
 </body>
 {% endblock %}
