@@ -1,16 +1,12 @@
-import random
-from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
-from sqlalchemy.sql.functions import func
-from sqlalchemy.sql.expression import exists
+import pickle
+
+from flask import request, session, render_template, redirect, url_for, flash
+
+from Quiz import PainterQuiz, SaintQuiz
 from models.painter import Painter
-from models.painting import Painting
-from models.saint import paintings
-from models.saint import Saint
 from models.user import User
 from settings import app
 from settings import db
-from Quiz import ImageQuiz, PainterQuiz, SaintQuiz
-import pickle
 
 
 def valid_actions():
@@ -152,6 +148,12 @@ def guess_the_painter():
         except KeyError:
             print "Something failed"
 
+            # http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
+
+    # the instructions below correspond to the following sql statement:
+    #  SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
+    # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
+    # ORDER BY random() LIMIT 4
     if session['quiz'] is None:
         # Obtain the painters and the paintings randomly
         selected_painters, selected_paintings = initialize_images(num_painters=10)
@@ -169,35 +171,6 @@ def guess_the_painter():
     return render_template('guess_the_painter.html',
                            quiz=quiz,
                            username=session['username'])
-
-
-def initialize_images(num_painters=10):
-    stmt = exists().where(Painter.id == Painting.painter_id)
-    selected_painters = Painter.query.filter(stmt).order_by(func.random()).limit(num_painters).all()
-
-    painters_dict = dict()
-    paintings_dict = dict()
-    selected_paintings = []
-    for key, painter in enumerate(selected_painters):
-        paintings_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(1).all()
-        selected_paintings.extend(paintings_aux)
-        painters_dict[key] = painter
-        paintings_dict[key] = paintings_aux[0]  # get the first
-    return painters_dict, paintings_dict
-
-
-def initialize_saint_images(num_saints=10):
-    selected_saints = Saint.query.filter(Saint.paintings.any()).order_by(func.random()).limit(num_saints).all()
-
-    saints_dict = dict()
-    paintings_dict = dict()
-    selected_paintings = []
-    for key, saint in enumerate(selected_saints):
-        paintings_aux = Painting.query.filter(Painting.saints.any(id=saint.id)).order_by(func.random()).limit(1).all()
-        selected_paintings.extend(paintings_aux)
-        saints_dict[key] = saint
-        paintings_dict[key] = paintings_aux[0]  # get the first
-    return saints_dict, paintings_dict
 
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])

@@ -1,5 +1,10 @@
 import random
 from abc import ABCMeta, abstractmethod
+from models.painter import Painter
+from models.painting import Painting
+from models.saint import Saint
+from sqlalchemy.sql.functions import func
+from sqlalchemy.sql.expression import exists
 
 
 class MultipleChoiceQuestion:
@@ -36,8 +41,10 @@ class Quiz:
 
 
 class ImageQuiz(Quiz):
-    def __init__(self, elements_dict, options_dict, num_elements_quiz=4):
+    def __init__(self, num_elements_quiz=4):
         super(ImageQuiz, self).__init__()
+
+        elements_dict, options_dict = self.initialize_image_quiz(num_elements=10)
         self.elements_dict = elements_dict
         self.options_dict = options_dict
         self.num_elements_quiz = num_elements_quiz
@@ -45,6 +52,9 @@ class ImageQuiz(Quiz):
         # Auxiliary attributes
         self.seen_elements_dict = dict()
         self.current_question = None
+
+    def initialize_image_quiz(self):
+        return [], []
 
     def generate_question(self):
         '''
@@ -89,11 +99,40 @@ class ImageQuiz(Quiz):
 
 
 class PainterQuiz(ImageQuiz):
-    def __init__(self, element_list, option_list, num_elements_quiz=4):
-        super(PainterQuiz, self).__init__(element_list, option_list, num_elements_quiz=num_elements_quiz)
+    def __init__(self, num_elements_quiz=4):
+        super(PainterQuiz, self).__init__(num_elements_quiz=num_elements_quiz)
+
+    def initialize_images(num_painters=10):
+        stmt = exists().where(Painter.id == Painting.painter_id)
+        selected_painters = Painter.query.filter(stmt).order_by(func.random()).limit(num_painters).all()
+
+        painters_dict = dict()
+        paintings_dict = dict()
+        selected_paintings = []
+        for key, painter in enumerate(selected_painters):
+            paintings_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(
+                1).all()
+            selected_paintings.extend(paintings_aux)
+            painters_dict[key] = painter
+            paintings_dict[key] = paintings_aux[0]  # get the first
+        return painters_dict, paintings_dict
 
 
 class SaintQuiz(ImageQuiz):
-    def __init__(self, element_list, option_list, num_elements_quiz=4):
+    def __init__(self, num_elements_quiz=4):
         # Elements are Paintings and Options are saints
-        super(SaintQuiz, self).__init__(element_list, option_list, num_elements_quiz=num_elements_quiz)
+        super(SaintQuiz, self).__init__(num_elements_quiz=num_elements_quiz)
+
+    def initialize_images(num_saints=10):
+        selected_saints = Saint.query.filter(Saint.paintings.any()).order_by(func.random()).limit(num_saints).all()
+
+        saints_dict = dict()
+        paintings_dict = dict()
+        selected_paintings = []
+        for key, saint in enumerate(selected_saints):
+            paintings_aux = Painting.query.filter(Painting.saints.any(id=saint.id)).order_by(func.random()).limit(
+                1).all()
+            selected_paintings.extend(paintings_aux)
+            saints_dict[key] = saint
+            paintings_dict[key] = paintings_aux[0]  # get the first
+        return saints_dict, paintings_dict
