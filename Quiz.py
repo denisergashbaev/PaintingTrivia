@@ -53,8 +53,8 @@ class ImageQuiz(Quiz):
         self.seen_elements_dict = dict()
         self.current_question = None
 
-    def initialize_image_quiz(self):
-        return [], []
+    def initialize_image_quiz(self, num_elements):
+        return None, None
 
     def generate_question(self):
         '''
@@ -86,23 +86,25 @@ class ImageQuiz(Quiz):
         self.current_question = question
         return question
 
-    def process_answer(self, question, correct):
+    def process_answer(self, answer):
+        correct = answer == self.current_question.correct_option.id
+
         # update score
         self.update_score(correct)
 
         # 0. pop element from element list
-        self.elements_dict.pop(question.element.keys()[0])
+        self.elements_dict.pop(self.current_question.element.keys()[0])
 
         if not correct:
             # save popped element in the seen_elements list
-            self.seen_elements_dict.update(question.element)
+            self.seen_elements_dict.update(self.current_question.element)
 
 
 class PainterQuiz(ImageQuiz):
     def __init__(self, num_elements_quiz=4):
         super(PainterQuiz, self).__init__(num_elements_quiz=num_elements_quiz)
 
-    def initialize_images(num_painters=10):
+    def initialize_image_quiz(num_painters=10):
         stmt = exists().where(Painter.id == Painting.painter_id)
         selected_painters = Painter.query.filter(stmt).order_by(func.random()).limit(num_painters).all()
 
@@ -111,10 +113,10 @@ class PainterQuiz(ImageQuiz):
         selected_paintings = []
         for key, painter in enumerate(selected_painters):
             paintings_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(
-                1).all()
-            selected_paintings.extend(paintings_aux)
+                1).first()
+            selected_paintings.extend([paintings_aux])
             painters_dict[key] = painter
-            paintings_dict[key] = paintings_aux[0]  # get the first
+            paintings_dict[key] = paintings_aux  # get the first
         return painters_dict, paintings_dict
 
 
@@ -123,7 +125,7 @@ class SaintQuiz(ImageQuiz):
         # Elements are Paintings and Options are saints
         super(SaintQuiz, self).__init__(num_elements_quiz=num_elements_quiz)
 
-    def initialize_images(num_saints=10):
+    def initialize_image_quiz(num_saints=10):
         selected_saints = Saint.query.filter(Saint.paintings.any()).order_by(func.random()).limit(num_saints).all()
 
         saints_dict = dict()
@@ -131,8 +133,8 @@ class SaintQuiz(ImageQuiz):
         selected_paintings = []
         for key, saint in enumerate(selected_saints):
             paintings_aux = Painting.query.filter(Painting.saints.any(id=saint.id)).order_by(func.random()).limit(
-                1).all()
-            selected_paintings.extend(paintings_aux)
+                1).first()
+            selected_paintings.extend([paintings_aux])
             saints_dict[key] = saint
-            paintings_dict[key] = paintings_aux[0]  # get the first
+            paintings_dict[key] = paintings_aux  # get the first
         return saints_dict, paintings_dict

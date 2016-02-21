@@ -126,8 +126,7 @@ def show_quiz_results():
             return x
     quiz = pickle.loads(session['quiz'])
     return render_template('show_quiz_results.html',
-                           right_guesses=sum(quiz.score),
-                           wrong_guesses=len(quiz.score) - sum(quiz.score),
+                           quiz=quiz,
                            username=session['username'])
 
 
@@ -142,8 +141,7 @@ def guess_the_painter():
         try:
             quiz = pickle.loads(session['quiz'])
             chosen_painter_id = int(request.form['chosen_painter'])
-            question = quiz.current_question
-            quiz.process_answer(question, chosen_painter_id == question.correct_option.id)
+            quiz.process_answer(chosen_painter_id)
             session['quiz'] = pickle.dumps(quiz)
         except KeyError:
             print "Something failed"
@@ -156,8 +154,7 @@ def guess_the_painter():
     # ORDER BY random() LIMIT 4
     if session['quiz'] is None:
         # Obtain the painters and the paintings randomly
-        selected_painters, selected_paintings = initialize_images(num_painters=10)
-        quiz = PainterQuiz(selected_paintings, selected_painters)
+        quiz = PainterQuiz()
         session['quiz'] = pickle.dumps(quiz)
     else:
         quiz = pickle.loads(session['quiz'])
@@ -184,16 +181,14 @@ def guess_the_saint():
         try:
             quiz = pickle.loads(session['quiz'])
             chosen_saint_id = int(request.form['chosen_saint'])
-            question = quiz.current_question
-            quiz.process_answer(question, chosen_saint_id == question.correct_option.id)
+            quiz.process_answer(chosen_saint_id)
             session['quiz'] = pickle.dumps(quiz)
         except KeyError:
             print "Something failed"
 
     if session['quiz'] is None:
         # Obtain the saints and the paintings randomly
-        selected_saints, selected_paintings = initialize_saint_images(num_saints=10)
-        quiz = SaintQuiz(selected_paintings, selected_saints)
+        quiz = SaintQuiz()
         session['quiz'] = pickle.dumps(quiz)
     else:
         quiz = pickle.loads(session['quiz'])
