@@ -167,9 +167,7 @@ def guess_the_painter():
     if not question:
         return redirect(url_for('show_quiz_results'))
     return render_template('guess_the_painter.html',
-                           painters=question.option_list,
-                           selected_painter=question.correct_option,
-                           selected_painting=question.element.values()[0],
+                           quiz=quiz,
                            right_guesses=sum(quiz.score),
                            wrong_guesses=len(quiz.score) - sum(quiz.score),
                            username=session['username'])
@@ -242,7 +240,7 @@ def guess_the_saint():
                            saints_list=question.option_list,
                            selected_painting=chosen_painting,
                            selected_saint=question.correct_option,
-                           selected_painter=chosen_painting.painter_id,
+                           selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first(),
                            right_guesses=sum(quiz.score),
                            wrong_guesses=len(quiz.score) - sum(quiz.score),
                            username=session['username'])

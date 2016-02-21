@@ -12,20 +12,20 @@
     <div>Wrong guesses: {{ wrong_guesses }}</div>
     <div>Who is this painting created by?</div>
 
-    <h2>{{ selected_painting.title }}</h2>
+    <h2>{{ quiz.current_question.element.values()[0].title }}</h2>
 
     <div class="painting"><img class="painting"
-                               src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
+                               src="{{ url_for('static', filename = 'pics/%s' % quiz.current_question.element.values()[0].file_name) }}"
                                border="0">
     </div>
     <div>Answers:</div>
 
     <form method="post" id="painter_form_id">
         <ul class="entries">
-            {% for painter in painters %}
+            {% for painter in quiz.current_question.option_list %}
             <button type="button" name="chosen_painter"
                     value="{{ painter.id }}"
-                    onclick="app.submitGuess(this, this.form, {{ selected_painter.id }})">
+                    onclick="app.submitGuess(this, this.form, {{ quiz.current_question.correct_option.id }})">
                 {{ painter.name }}
             </button>
             <br/>
