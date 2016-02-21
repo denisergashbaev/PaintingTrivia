@@ -93,7 +93,6 @@ class PainterQuiz(ImageQuiz):
         super(PainterQuiz, self).__init__(element_list, option_list, num_elements_quiz=num_elements_quiz)
 
 
-
 class SaintQuiz(ImageQuiz):
     def __init__(self, element_list, option_list, num_elements_quiz=4):
         # Elements are Paintings and Options are saints

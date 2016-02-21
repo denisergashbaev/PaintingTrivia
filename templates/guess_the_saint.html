@@ -8,22 +8,24 @@
     <div class="flash">{{ message }}</div>
     {% endfor %}
     <div>Statistics:</div>
-    <div>Right guesses: {{ right_guesses }}</div>
-    <div>Wrong guesses: {{ wrong_guesses }}</div>
+    <div>Right guesses: {{ quiz.score|sum() }}</div>
+    <div>Wrong guesses: {{ quiz.score|length - quiz.score|sum() }}</div>
     <div>Who is this painting created by?</div>
 
     <h2>{{ selected_painter.name }}</h2>
+
     <div class="painting"><img class="painting"
-                               src="{{ url_for('static', filename = 'pics/%s' % selected_painting.file_name) }}"
+                               src="{{ url_for('static', filename = 'pics/%s' % quiz.current_question.element.values()[0].file_name) }}"
                                border="0">
     </div>
     <div>Answers:</div>
 
     <form method="post" id="saint_form_id">
         <ul class="entries">
-            {% for saint in saints_list %}
+            {% for saint in quiz.current_question.option_list %}
             <button id="chosen_saint_{{ saint.id }}" type="button" name="chosen_saint"
-                    value="{{ saint.id }}" onclick="app.submitGuess(this, this.form, {{ selected_saint.id }})">
+                    value="{{ saint.id }}"
+                    onclick="app.submitGuess(this, this.form, {{ quiz.current_question.correct_option.id }})">
                 {{ saint.name }}
             </button>
             <br/>

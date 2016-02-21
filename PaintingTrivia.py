@@ -235,12 +235,8 @@ def guess_the_saint():
     chosen_painting = question.element.values()[0]
 
     return render_template('guess_the_saint.html',
-                           saints_list=question.option_list,
-                           selected_painting=chosen_painting,
-                           selected_saint=question.correct_option,
+                           quiz=quiz,
                            selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first(),
-                           right_guesses=sum(quiz.score),
-                           wrong_guesses=len(quiz.score) - sum(quiz.score),
                            username=session['username'])
 
 
