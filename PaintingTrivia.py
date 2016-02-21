@@ -168,8 +168,6 @@ def guess_the_painter():
         return redirect(url_for('show_quiz_results'))
     return render_template('guess_the_painter.html',
                            quiz=quiz,
-                           right_guesses=sum(quiz.score),
-                           wrong_guesses=len(quiz.score) - sum(quiz.score),
                            username=session['username'])
 
 
