@@ -24,7 +24,7 @@ class Quiz:
         # current
         self.current_question = None
 
-    def getScore(self):
+    def get_score(self):
         return self.score
 
     @abstractmethod
