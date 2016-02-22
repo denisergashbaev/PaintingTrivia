@@ -1,10 +1,12 @@
 import random
 from abc import ABCMeta, abstractmethod
+
+from sqlalchemy.sql.expression import exists
+from sqlalchemy.sql.functions import func
+
 from models.painter import Painter
 from models.painting import Painting
 from models.saint import Saint
-from sqlalchemy.sql.functions import func
-from sqlalchemy.sql.expression import exists
 
 
 class MultipleChoiceQuestion:
@@ -104,9 +106,9 @@ class PainterQuiz(ImageQuiz):
     def __init__(self, num_elements_quiz=4):
         super(PainterQuiz, self).__init__(num_elements_quiz=num_elements_quiz)
 
-    def initialize_image_quiz(num_painters=10):
+    def initialize_image_quiz(self, num_elements=10):
         stmt = exists().where(Painter.id == Painting.painter_id)
-        selected_painters = Painter.query.filter(stmt).order_by(func.random()).limit(num_painters).all()
+        selected_painters = Painter.query.filter(stmt).order_by(func.random()).limit(num_elements).all()
 
         painters_dict = dict()
         paintings_dict = dict()
@@ -117,7 +119,7 @@ class PainterQuiz(ImageQuiz):
             selected_paintings.extend([paintings_aux])
             painters_dict[key] = painter
             paintings_dict[key] = paintings_aux  # get the first
-        return painters_dict, paintings_dict
+        return paintings_dict, painters_dict
 
 
 class SaintQuiz(ImageQuiz):
@@ -125,8 +127,8 @@ class SaintQuiz(ImageQuiz):
         # Elements are Paintings and Options are saints
         super(SaintQuiz, self).__init__(num_elements_quiz=num_elements_quiz)
 
-    def initialize_image_quiz(num_saints=10):
-        selected_saints = Saint.query.filter(Saint.paintings.any()).order_by(func.random()).limit(num_saints).all()
+    def initialize_image_quiz(self, num_elements=10):
+        selected_saints = Saint.query.filter(Saint.paintings.any()).order_by(func.random()).limit(num_elements).all()
 
         saints_dict = dict()
         paintings_dict = dict()
@@ -137,4 +139,4 @@ class SaintQuiz(ImageQuiz):
             selected_paintings.extend([paintings_aux])
             saints_dict[key] = saint
             paintings_dict[key] = paintings_aux  # get the first
-        return saints_dict, paintings_dict
+        return paintings_dict, saints_dict

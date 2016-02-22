@@ -2,9 +2,9 @@ import pickle
 
 from flask import request, session, render_template, redirect, url_for, flash
 
-from Quiz import PainterQuiz, SaintQuiz
 from models.painter import Painter
 from models.user import User
+from quiz import PainterQuiz, SaintQuiz
 from settings import app
 from settings import db
 
