@@ -1,9 +1,7 @@
 import random
 from abc import ABCMeta, abstractmethod
-
 from sqlalchemy.sql.expression import exists
 from sqlalchemy.sql.functions import func
-
 from models.painter import Painter
 from models.painting import Painting
 from models.saint import Saint
@@ -26,6 +24,9 @@ class Quiz:
         # current
         self.current_question = None
 
+        self.right_guesses = sum(self.score)
+        self.wrong_guesses = len(self.score) - self.right_guesses
+
     def get_score(self):
         return self.score
 
@@ -34,6 +35,10 @@ class Quiz:
         return None
 
     def update_score(self, correct):
+        if correct:
+            self.right_guesses += 1
+        else:
+            self.wrong_guesses += 1
         self.score.append(correct)
 
     def next_question(self):

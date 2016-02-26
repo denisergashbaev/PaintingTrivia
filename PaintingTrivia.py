@@ -142,11 +142,11 @@ def guess_the_painter():
             quiz = pickle.loads(session['quiz'])
             chosen_painter_id = int(request.form['chosen_painter'])
             quiz.process_answer(chosen_painter_id)
-            session['quiz'] = pickle.dumps(quiz)
         except KeyError:
-            print "Something failed"
+            quiz = PainterQuiz()
+        session['quiz'] = pickle.dumps(quiz)
 
-            # http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
+        # http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
 
     # the instructions below correspond to the following sql statement:
     #  SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter

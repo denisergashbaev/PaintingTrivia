@@ -8,8 +8,8 @@
     <div class="flash">{{ message }}</div>
     {% endfor %}
     <div>Statistics:</div>
-    <div>Right guesses: {{ quiz.score|sum() }}</div>
-    <div>Wrong guesses: {{ quiz.score|length - quiz.score|sum() }}</div>
+    <div>Right guesses: {{ quiz.right_guesses }}</div>
+    <div>Wrong guesses: {{ quiz.wrong_guesses }}</div>
     <div>Who is this painting created by?</div>
 
     <h2>{{ quiz.current_question.element.values()[0].title }}</h2>
