@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>PaintingTrivia</title>
-    {% if not 'username' in session %}
+    {% if not current_user.is_authenticated %}
         <div class="page">
             <form method="post">
                 <p><button type="submit" name="navigate_to" value="login">Login</button></p>

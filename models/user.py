@@ -12,6 +12,21 @@ class User(db.Model):
         self.name = name
         self.password = password
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+
     def __repr__(self):
         return '<User %r>' % self.name
 
@@ -25,11 +40,15 @@ class User(db.Model):
             user = User(user_name, crypt.crypt(user_password, salt))
             db.session.add(user)
             db.session.commit()
-            return True
-        return False
+            return user
+        return None
 
     @staticmethod
-    def check_user_password(user_name, user_password):
-        retrieved_users = User.query.filter(and_(User.name == user_name, User.password == crypt.crypt(user_password, salt))
-                                            ).first()
-        return retrieved_users is not None
+    def get_user(user_name, user_password):
+        retrieved_user = User.query.filter(and_(User.name == user_name,
+                                                User.password == crypt.crypt(user_password, salt))).first()
+        return retrieved_user
+
+    @staticmethod
+    def get_user_by_id(user_id):
+        return User.query.filter(User.id == user_id).first()

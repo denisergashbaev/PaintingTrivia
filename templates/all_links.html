@@ -1,0 +1,6 @@
+{# all_links.html: http://stackoverflow.com/a/13161594 #}
+<ul>
+{% for url, endpoint in links %}
+<li><a href="{{ url }}">{{ endpoint }}</a></li>
+{% endfor %}
+</ul>

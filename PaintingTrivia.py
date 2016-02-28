@@ -1,17 +1,21 @@
 import pickle
 
 from flask import request, session, render_template, redirect, url_for, flash
+from flask.ext.login import login_required, login_user, logout_user
 
 from models.painter import Painter
 from models.user import User
 from quiz import PainterQuiz, SaintQuiz
-from settings import app
-from settings import db
+from settings import app, login_manager
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_user_by_id(user_id)
 
 
 def valid_actions():
-    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__,
-            main_menu.__name__]
+    return [login.__name__, register.__name__, logout.__name__, guess_the_saint.__name__, guess_the_painter.__name__]
 
 
 def layout_buttons():
@@ -34,15 +38,8 @@ def set_session():
     initialize_quiz()
 
 
-@app.route('/')
-def index():
-    if 'username' in session:
-        return redirect(url_for('main_menu'))
-    else:
-        return redirect(url_for('menu'))
-
-
 @app.route('/main', methods=['GET', 'POST'])
+@login_required
 def menu():
     if request.method == 'POST':
         x = layout_buttons()
@@ -61,19 +58,13 @@ def login():
         username_aux = request.form['username']
         password_aux = request.form['password']
         if username_aux and password_aux:
-            # Check if the username exists
-            retrieved_users = User.query.filter(User.name == username_aux).all()
-            if retrieved_users:
-                # Check if the password is correct
-                if User.check_user_password(username_aux, password_aux):
-                    session['username'] = username_aux
-                    return redirect(url_for('index'))
-                else:
-                    flash('Password is wrong!', 'error')
-                    return redirect(url_for('index'))
+            # Check if the password is correct
+            user = User.get_user(username_aux, password_aux)
+            if user:
+                login_user(user)
+                return redirect(url_for('main_menu'))
             else:
-                flash('This user is not registered!', 'error')
-                return redirect(url_for('register'))
+                flash('Wrong username/password', 'error')
     return render_template('login.html')
 
 
@@ -86,37 +77,37 @@ def register():
         username_aux = request.form['username']
         password_aux = request.form['password']
         if username_aux and password_aux:
-            retrieved_users = User.query.filter(User.name == username_aux).all()
-            if retrieved_users:
+            # try to add the user to the database
+            user = User.add_user(username_aux, password_aux)
+            if user:
+                login_user(user)
+                return redirect(url_for('main_menu'))
+            else:
                 # Check if the password is correct
                 flash('User already exists', 'error')
-            else:
-                # Add the user
-                session['username'] = username_aux
-                User.add_user(username_aux, password_aux)
-                db.session.commit()
-                return redirect(url_for('index'))
     return render_template('register.html')
 
 
 @app.route('/logout')
+@login_required
 def logout():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    session.clear()
-    return redirect(url_for('index'))
+    logout_user()
+    return redirect(url_for('main_menu'))
 
 
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])
+@login_required
 def main_menu():
     if request.method == 'POST':
         x = layout_buttons()
         if x:
             return x
-    return render_template('main_menu.html', username=session['username'])
+    return render_template('main_menu.html')
 
 
 @app.route('/results', methods=['GET', 'POST'])
+@login_required
 def show_quiz_results():
     if request.method == 'POST':
         # Clear session
@@ -126,11 +117,11 @@ def show_quiz_results():
             return x
     quiz = pickle.loads(session['quiz'])
     return render_template('show_quiz_results.html',
-                           quiz=quiz,
-                           username=session['username'])
+                           quiz=quiz)
 
 
 @app.route('/guessthepainter', methods=['GET', 'POST'])
+@login_required
 def guess_the_painter():
     # if the request is sent from a form
     if request.method == 'POST':
@@ -166,11 +157,11 @@ def guess_the_painter():
     if not question:
         return redirect(url_for('show_quiz_results'))
     return render_template('guess_the_painter.html',
-                           quiz=quiz,
-                           username=session['username'])
+                           quiz=quiz)
 
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])
+@login_required
 def guess_the_saint():
     # if the request is sent from a form
     if request.method == 'POST':
@@ -204,9 +195,25 @@ def guess_the_saint():
 
     return render_template('guess_the_saint.html',
                            quiz=quiz,
-                           selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first(),
-                           username=session['username'])
+                           selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first())
 
+
+#http://stackoverflow.com/a/13161594
+@app.route("/all-links")
+def site_map():
+    def has_no_empty_params(rule):
+        defaults = rule.defaults if rule.defaults is not None else ()
+        arguments = rule.arguments if rule.arguments is not None else ()
+        return len(defaults) >= len(arguments)
+
+    links = []
+    for rule in app.url_map.iter_rules():
+        # Filter out rules we can't navigate to in a browser
+        # and rules that require parameters
+        if "GET" in rule.methods and has_no_empty_params(rule):
+            url = url_for(rule.endpoint, **(rule.defaults or {}))
+            links.append((url, rule.endpoint))
+    return render_template("all_links.html", links=links)
 
 if __name__ == '__main__':
     app.run()
