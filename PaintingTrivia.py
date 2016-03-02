@@ -24,14 +24,13 @@ def layout_buttons():
 
 
 def initialize_quiz():
-    if 'quiz' not in session:
-        session['quiz'] = None
+    session['quiz'] = None
+    print session
 
-
-@app.before_request
-def set_session():
+# @app.before_request
+# def set_session():
     # initialize the points in the user session
-    initialize_quiz()
+    # initialize_quiz()
 
 
 @app.route('/')
@@ -48,6 +47,8 @@ def menu():
         x = layout_buttons()
         if x:
             return x
+    initialize_quiz()
+    print "Initialize Quiz in menu"
     return render_template('menu.html')
 
 
@@ -113,6 +114,8 @@ def main_menu():
         x = layout_buttons()
         if x:
             return x
+    initialize_quiz()
+    print "Initialize Quiz in main_menu"
     return render_template('main_menu.html', username=session['username'])
 
 
@@ -143,6 +146,7 @@ def guess_the_painter():
             chosen_painter_id = int(request.form['chosen_painter'])
             quiz.process_answer(chosen_painter_id)
         except KeyError:
+            print "HOOOSSSS"
             quiz = PainterQuiz()
         session['quiz'] = pickle.dumps(quiz)
 
@@ -179,6 +183,8 @@ def guess_the_saint():
             return x
 
         try:
+
+            import pdb;pdb.set_trace()
             quiz = pickle.loads(session['quiz'])
             chosen_saint_id = int(request.form['chosen_saint'])
             quiz.process_answer(chosen_saint_id)
@@ -189,6 +195,7 @@ def guess_the_saint():
     if session['quiz'] is None:
         # Obtain the saints and the paintings randomly
         quiz = SaintQuiz()
+        import pdb;pdb.set_trace()
         session['quiz'] = pickle.dumps(quiz)
     else:
         quiz = pickle.loads(session['quiz'])
@@ -200,7 +207,7 @@ def guess_the_saint():
     if not question:
         return redirect(url_for('show_quiz_results'))
 
-    chosen_painting = question.element.values()[0]
+    chosen_painting = question.element_.values()[0]
 
     return render_template('guess_the_saint.html',
                            quiz=quiz,

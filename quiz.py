@@ -9,7 +9,8 @@ from models.saint import Saint
 
 class MultipleChoiceQuestion:
     def __init__(self, element, correct_option, option_list):
-        self.element = element
+        self.element_ = element
+        # self.element_.values()[0]
         self.correct_option = correct_option
         self.option_list = option_list
 
@@ -100,11 +101,11 @@ class ImageQuiz(Quiz):
         self.update_score(correct)
 
         # 0. pop element from element list
-        self.elements_dict.pop(self.current_question.element.keys()[0])
+        self.elements_dict.pop(self.current_question.element_.keys()[0])
 
         if not correct:
             # save popped element in the seen_elements list
-            self.seen_elements_dict.update(self.current_question.element)
+            self.seen_elements_dict.update(self.current_question.element_)
 
 
 class PainterQuiz(ImageQuiz):
