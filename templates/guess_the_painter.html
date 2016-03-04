@@ -12,10 +12,10 @@
     <div>Wrong guesses: {{ quiz.wrong_guesses }}</div>
     <div>Who is this painting created by?</div>
 
-    <h2>{{ quiz.current_question.element_.values()[0].title }}</h2>
+    <h2>{{ quiz.current_question._element.values()[0].title }}</h2>
 
     <div class="painting"><img class="painting"
-                               src="{{ url_for('static', filename = 'pics/%s' % quiz.current_question.element_.values()[0].file_name) }}"
+                               src="{{ url_for('static', filename = 'pics/%s' % quiz.current_question._element.values()[0].file_name) }}"
                                border="0">
     </div>
     <div>Answers:</div>
