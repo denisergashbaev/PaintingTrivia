@@ -67,6 +67,7 @@ def login():
             else:
                 flash('This user is not registered!', 'error')
                 return redirect(url_for('register'))
+    initialize_quiz()
     return render_template('login.html')
 
 
@@ -175,13 +176,12 @@ def guess_the_saint():
         if x:
             return x
 
-        try:
-            quiz = pickle.loads(session['quiz'])
-            chosen_saint_id = int(request.form['chosen_saint'])
-            quiz.process_answer(chosen_saint_id)
-            session['quiz'] = pickle.dumps(quiz)
-        except KeyError:
-            print "Something failed"
+
+        quiz = pickle.loads(session['quiz'])
+        chosen_saint_id = int(request.form['chosen_saint'])
+        quiz.process_answer(chosen_saint_id)
+        session['quiz'] = pickle.dumps(quiz)
+
 
     if session['quiz'] is None:
         # Obtain the saints and the paintings randomly
@@ -197,7 +197,7 @@ def guess_the_saint():
     if not question:
         return redirect(url_for('show_quiz_results', redirect_to='guess_the_saint'))
 
-    chosen_painting = question._element.values()[0]
+    chosen_painting = question.element
 
     return render_template('guess_the_saint.html',
                            quiz=quiz,

@@ -10,6 +10,7 @@ from models.saint import Saint
 class MultipleChoiceQuestion:
     def __init__(self, element, correct_option, option_list):
         self._element = element
+        self.element = element.values()[0]
         self.correct_option = correct_option
         self.option_list = option_list
 
