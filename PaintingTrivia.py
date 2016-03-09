@@ -176,12 +176,10 @@ def guess_the_saint():
         if x:
             return x
 
-
         quiz = pickle.loads(session['quiz'])
         chosen_saint_id = int(request.form['chosen_saint'])
         quiz.process_answer(chosen_saint_id)
         session['quiz'] = pickle.dumps(quiz)
-
 
     if session['quiz'] is None:
         # Obtain the saints and the paintings randomly

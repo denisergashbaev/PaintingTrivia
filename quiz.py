@@ -52,9 +52,7 @@ class ImageQuiz(Quiz):
     def __init__(self, num_elements_quiz=4):
         super(ImageQuiz, self).__init__()
 
-        elements_dict, options_dict = self.initialize_image_quiz(num_elements=10)
-        self.elements_dict = elements_dict
-        self.options_dict = options_dict
+        self.elements_dict, self.options_dict = self.initialize_image_quiz(num_elements=10)
         self.num_elements_quiz = num_elements_quiz
 
         # Auxiliary attributes
