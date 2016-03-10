@@ -8,10 +8,10 @@ from models.saint import Saint
 
 
 class MultipleChoiceQuestion:
-    def __init__(self, element, correct_option, option_list):
-        self._element = element
-        self.element = element.values()[0]
-        self.correct_option = correct_option
+    def __init__(self, question, correct_answer, option_list):
+        self.question_dict = question
+        self.question = question.values()[0]
+        self.correct_answer = correct_answer
         self.option_list = option_list
 
 
@@ -28,12 +28,9 @@ class Quiz:
         self.right_guesses = sum(self.score)
         self.wrong_guesses = len(self.score) - self.right_guesses
 
-    def get_score(self):
-        return self.score
-
     @abstractmethod
     def generate_question(self):
-        return None
+        return
 
     def update_score(self, correct):
         if correct:
@@ -55,12 +52,12 @@ class ImageQuiz(Quiz):
         self.elements_dict, self.options_dict = self.initialize_image_quiz(num_elements=10)
         self.num_elements_quiz = num_elements_quiz
 
-        # Auxiliary attributes
         self.seen_elements_dict = dict()
         self.current_question = None
 
+    @abstractmethod
     def initialize_image_quiz(self, num_elements):
-        return None, None
+        return
 
     def generate_question(self):
         '''
@@ -80,12 +77,13 @@ class ImageQuiz(Quiz):
         # 2. Create a subset of the option_list for the quiz
         correct_element = self.elements_dict[correct_key]
         correct_option = self.options_dict[correct_key]
-        quiz_options_list = list()
-        quiz_options_list.append(correct_option)
         other_options = filter(lambda x: x != correct_option, set(self.options_dict.values()))
-        quiz_options_list.extend(random.sample(other_options, self.num_elements_quiz - 1))
+        aux_list = random.sample(other_options, self.num_elements_quiz - 1)
+        quiz_options_set = set(aux_list)
+        quiz_options_set.add(correct_option)
 
         # 3. Shuffle the new sub_option_list
+        quiz_options_list = list(quiz_options_set)
         random.shuffle(quiz_options_list)
         question = MultipleChoiceQuestion({correct_key: correct_element}, correct_option, quiz_options_list)
 
@@ -99,11 +97,11 @@ class ImageQuiz(Quiz):
         self.update_score(correct)
 
         # 0. pop element from element list
-        self.elements_dict.pop(self.current_question._element.keys()[0])
+        self.elements_dict.pop(self.current_question.question_dict.keys()[0])
 
         if not correct:
             # save popped element in the seen_elements list
-            self.seen_elements_dict.update(self.current_question._element)
+            self.seen_elements_dict.update(self.current_question.question_dict)
 
 
 class PainterQuiz(ImageQuiz):
