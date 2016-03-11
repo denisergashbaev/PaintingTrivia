@@ -116,11 +116,11 @@ class PainterQuiz(ImageQuiz):
         paintings_dict = dict()
         selected_paintings = []
         for key, painter in enumerate(selected_painters):
-            paintings_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(
+            painting_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(
                 1).first()
-            selected_paintings.extend([paintings_aux])
+            selected_paintings.extend([painting_aux])
             painters_dict[key] = painter
-            paintings_dict[key] = paintings_aux  # get the first
+            paintings_dict[key] = painting_aux  # get the first
         return paintings_dict, painters_dict
 
 
