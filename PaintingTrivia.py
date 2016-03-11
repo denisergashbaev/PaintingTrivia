@@ -29,14 +29,7 @@ def layout_buttons():
 
 
 def initialize_quiz():
-    if 'quiz' not in session:
-        session['quiz'] = None
-
-
-@app.before_request
-def set_session():
-    # initialize the points in the user session
-    initialize_quiz()
+    session['quiz'] = None
 
 
 @app.route('/main', methods=['GET', 'POST'])
@@ -46,6 +39,7 @@ def menu():
         x = layout_buttons()
         if x:
             return x
+    initialize_quiz()
     return render_template('menu.html')
 
 
@@ -55,7 +49,6 @@ def login():
         x = layout_buttons()
         if x:
             return x
-
         username_aux = request.form['username']
         password_aux = request.form['password']
         if username_aux and password_aux:
@@ -65,7 +58,9 @@ def login():
                 login_user(user)
                 return redirect(url_for('main_menu'))
             else:
-                flash('Wrong username/password', 'error')
+                flash('Invalid username/password', 'error')
+                return redirect(url_for('register'))
+    initialize_quiz()
     return render_template('login.html')
 
 
@@ -104,6 +99,7 @@ def main_menu():
         x = layout_buttons()
         if x:
             return x
+    initialize_quiz()
     return render_template('main_menu.html')
 
 
@@ -115,10 +111,13 @@ def show_quiz_results():
         session.pop('quiz')
         x = layout_buttons()
         if x:
+            initialize_quiz()
             return x
     quiz = pickle.loads(session['quiz'])
+    redirect_to = request.args['redirect_to']
     return render_template('show_quiz_results.html',
-                           quiz=quiz)
+                           quiz=quiz,
+                           redirect_to=redirect_to)
 
 
 @app.route('/guessthepainter', methods=['GET', 'POST'])
@@ -156,7 +155,7 @@ def guess_the_painter():
 
     session['quiz'] = pickle.dumps(quiz)
     if not question:
-        return redirect(url_for('show_quiz_results'))
+        return redirect(url_for('show_quiz_results', redirect_to='guess_the_painter'))
     return render_template('guess_the_painter.html',
                            quiz=quiz)
 
@@ -170,13 +169,10 @@ def guess_the_saint():
         if x:
             return x
 
-        try:
-            quiz = pickle.loads(session['quiz'])
-            chosen_saint_id = int(request.form['chosen_saint'])
-            quiz.process_answer(chosen_saint_id)
-            session['quiz'] = pickle.dumps(quiz)
-        except KeyError:
-            print "Something failed"
+        quiz = pickle.loads(session['quiz'])
+        chosen_saint_id = int(request.form['chosen_saint'])
+        quiz.process_answer(chosen_saint_id)
+        session['quiz'] = pickle.dumps(quiz)
 
     if session['quiz'] is None:
         # Obtain the saints and the paintings randomly
@@ -190,16 +186,16 @@ def guess_the_saint():
 
     session['quiz'] = pickle.dumps(quiz)
     if not question:
-        return redirect(url_for('show_quiz_results'))
+        return redirect(url_for('show_quiz_results', redirect_to='guess_the_saint'))
 
-    chosen_painting = question.element.values()[0]
+    chosen_painting = question.element
 
     return render_template('guess_the_saint.html',
                            quiz=quiz,
                            selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first())
 
 
-#http://stackoverflow.com/a/13161594
+# http://stackoverflow.com/a/13161594
 @app.route("/all-links")
 def site_map():
     def has_no_empty_params(rule):
