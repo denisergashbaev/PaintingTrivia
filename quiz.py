@@ -25,8 +25,8 @@ class Quiz:
         # current
         self.current_question = None
 
-        self.right_guesses = sum(self.score)
-        self.wrong_guesses = len(self.score) - self.right_guesses
+        self.right_guesses = 0
+        self.wrong_guesses = 0
 
     @abstractmethod
     def generate_question(self):
