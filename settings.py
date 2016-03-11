@@ -7,6 +7,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 DATABASE_FOLDER = abspath(dirname(__file__)) + '/database'
 DATABASE = DATABASE_FOLDER + '/trivia.db'
 SQLALCHEMY_DATABASE_URI = 'sqlite:////' + DATABASE
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 DEBUG = True
 SECRET_KEY = 'development key'
 

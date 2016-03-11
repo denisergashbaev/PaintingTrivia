@@ -156,8 +156,7 @@ def guess_the_painter():
     session['quiz'] = pickle.dumps(quiz)
     if not question:
         return redirect(url_for('show_quiz_results', redirect_to='guess_the_painter'))
-    return render_template('guess_the_painter.html',
-                           quiz=quiz)
+    return render_template('guess_the_painter.html', quiz=quiz)
 
 
 @app.route('/guessthesaint', methods=['GET', 'POST'])
@@ -188,11 +187,8 @@ def guess_the_saint():
     if not question:
         return redirect(url_for('show_quiz_results', redirect_to='guess_the_saint'))
 
-    chosen_painting = question.element
-
-    return render_template('guess_the_saint.html',
-                           quiz=quiz,
-                           selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first())
+    return render_template('guess_the_saint.html', quiz=quiz,
+                           selected_painter=Painter.query.filter(Painter.id == question.question.painter_id).first())
 
 
 # http://stackoverflow.com/a/13161594
