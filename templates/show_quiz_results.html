@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+<body>
+{% include "login_register_segment.html"%}
+    <div class="page">
+        <h1>PaintingTrivia</h1>
+        {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+        <div>Statistics:</div>
+        <div>Right guesses: {{ right_guesses }}</div>
+        <div>Wrong guesses: {{ wrong_guesses }}</div>
+        <div>Who is this painting created by?</div>
+        <form name="form" method="post" action="">
+            <p><button type="submit" name="navigate_to" value={{redirect_to}}>Play again</button></p>
+            <p><button type="submit" name="navigate_to" value="main_menu">Main menu</button></p>
+        </form>
+    </div>
+</body>
+{% endblock %}

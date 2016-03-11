@@ -1,12 +1,10 @@
-import random
-from flask import request, session, render_template, Markup, redirect, url_for, Flask, flash
-from sqlalchemy.sql.expression import exists
-from sqlalchemy.sql.functions import func
-from sqlalchemy.sql.expression import exists
+import pickle
+
+from flask import request, session, render_template, redirect, url_for, flash
+
 from models.painter import Painter
-from models.painting import Painting
-from models.saint import Saint
 from models.user import User
+from quiz import PainterQuiz, SaintQuiz
 from settings import app
 from settings import db
 
@@ -25,18 +23,13 @@ def layout_buttons():
         return redirect(url_for(navigate_to))
 
 
-@app.before_request
-def set_session():
-    # initialize the points in the user session
-    if 'right_guesses' not in session:
-        session['right_guesses'] = 0
-        session['wrong_guesses'] = 0
+def initialize_quiz():
+    session['quiz'] = None
 
 
 @app.route('/')
 def index():
     if 'username' in session:
-        # return 'Logged in as %s' % Markup.escape(session['username'])
         return redirect(url_for('main_menu'))
     else:
         return redirect(url_for('menu'))
@@ -48,6 +41,7 @@ def menu():
         x = layout_buttons()
         if x:
             return x
+    initialize_quiz()
     return render_template('menu.html')
 
 
@@ -57,7 +51,6 @@ def login():
         x = layout_buttons()
         if x:
             return x
-
         username_aux = request.form['username']
         password_aux = request.form['password']
         if username_aux and password_aux:
@@ -74,6 +67,7 @@ def login():
             else:
                 flash('This user is not registered!', 'error')
                 return redirect(url_for('register'))
+    initialize_quiz()
     return render_template('login.html')
 
 
@@ -113,7 +107,25 @@ def main_menu():
         x = layout_buttons()
         if x:
             return x
+    initialize_quiz()
     return render_template('main_menu.html', username=session['username'])
+
+
+@app.route('/results', methods=['GET', 'POST'])
+def show_quiz_results():
+    if request.method == 'POST':
+        # Clear session
+        session.pop('quiz')
+        x = layout_buttons()
+        if x:
+            initialize_quiz()
+            return x
+    quiz = pickle.loads(session['quiz'])
+    redirect_to = request.args['redirect_to']
+    return render_template('show_quiz_results.html',
+                           quiz=quiz,
+                           username=session['username'],
+                           redirect_to=redirect_to)
 
 
 @app.route('/guessthepainter', methods=['GET', 'POST'])
@@ -125,32 +137,34 @@ def guess_the_painter():
             return x
 
         try:
-            chosen_painter = int(request.form['chosen_painter'])
+            quiz = pickle.loads(session['quiz'])
+            chosen_painter_id = int(request.form['chosen_painter'])
+            quiz.process_answer(chosen_painter_id)
         except KeyError:
-            chosen_painter = -1
-        key = 'right_guesses' if chosen_painter == session[
-            'selected_painter_id'] else 'wrong_guesses'
-        session[key] += 1
+            quiz = PainterQuiz()
+        session['quiz'] = pickle.dumps(quiz)
 
-    #http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
-    #the instructions below correspond to the following sql statement:
-    # SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
+        # http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
+
+    # the instructions below correspond to the following sql statement:
+    #  SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
     # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
     # ORDER BY random() LIMIT 4
+    if session['quiz'] is None:
+        # Obtain the painters and the paintings randomly
+        quiz = PainterQuiz()
+        session['quiz'] = pickle.dumps(quiz)
+    else:
+        quiz = pickle.loads(session['quiz'])
 
-    stmt = exists().where(Painter.id == Painting.painter_id)
-    painters = Painter.query.filter(stmt).order_by(func.random()).limit(4).all()
-    selected_painter = random.choice(painters)
-    selected_painting = Painting.query.filter(Painting.painter == selected_painter).order_by(func.random()).limit(
-        1).first()
+    # If all of the images have been seen, show again, the incorrect ones
+    question = quiz.next_question()
 
-    session['selected_painter_id'] = selected_painting.painter.id
+    session['quiz'] = pickle.dumps(quiz)
+    if not question:
+        return redirect(url_for('show_quiz_results', redirect_to='guess_the_painter'))
     return render_template('guess_the_painter.html',
-                           painters=painters,
-                           selected_painter=selected_painter,
-                           selected_painting=selected_painting,
-                           right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'],
+                           quiz=quiz,
                            username=session['username'])
 
 
@@ -161,38 +175,33 @@ def guess_the_saint():
         x = layout_buttons()
         if x:
             return x
-        try:
-            chosen_painting = int(request.form['chosen_saint'])
-        except KeyError:
-            chosen_painting = -1
 
-        key = 'right_guesses' if chosen_painting == session[
-            'selected_saint_id'] else 'wrong_guesses'
-        session[key] += 1
+        quiz = pickle.loads(session['quiz'])
+        chosen_saint_id = int(request.form['chosen_saint'])
+        quiz.process_answer(chosen_saint_id)
+        session['quiz'] = pickle.dumps(quiz)
 
-    # Select a painter who has at least a painting
-    # stmt = exists().where(Saint.paintings.any(id==Painting.id))
-    # painting_list = Painting.query.filter(stmt).order_by(func.random()).limit(4).all()
+    if session['quiz'] is None:
+        # Obtain the saints and the paintings randomly
+        quiz = SaintQuiz()
+        session['quiz'] = pickle.dumps(quiz)
+    else:
+        quiz = pickle.loads(session['quiz'])
 
-    saints_list = Saint.query.filter(Saint.paintings.any()).limit(4).all()
-    selected_saint = random.choice(saints_list)
+    # If all of the images have been seen, show again, the incorrect ones
+    question = quiz.next_question()
 
-    selected_painting = Painting.query.filter(Painting.saints.any(id=selected_saint.id)).first()
+    session['quiz'] = pickle.dumps(quiz)
+    if not question:
+        return redirect(url_for('show_quiz_results', redirect_to='guess_the_saint'))
 
-    session['selected_saint_id'] = selected_saint.id
+    chosen_painting = question.element
+
     return render_template('guess_the_saint.html',
-                           saints_list=saints_list,
-                           selected_painter=selected_painting.painter,
-                           selected_saint=selected_saint,
-                           selected_painting=selected_painting,
-                           right_guesses=session['right_guesses'],
-                           wrong_guesses=session['wrong_guesses'],
+                           quiz=quiz,
+                           selected_painter=Painter.query.filter(Painter.id == chosen_painting.painter_id).first(),
                            username=session['username'])
 
 
 if __name__ == '__main__':
-    # run on the machine ip address (local network)
-    # http://stackoverflow.com/questions/7023052/flask-configure-dev-server-to-be-visible-across-the-network
-    # app.run(host='0.0.0.0')
-    # run on localhost
     app.run()
