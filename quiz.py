@@ -76,22 +76,22 @@ class ImageQuiz(Quiz):
 
         # 2. Create a subset of the option_list for the quiz
         correct_element = self.elements_dict[correct_key]
-        correct_option = self.options_dict[correct_key]
-        other_options = filter(lambda x: x != correct_option, set(self.options_dict.values()))
+        correct_answer = self.options_dict[correct_key]
+        other_options = filter(lambda x: x != correct_answer, set(self.options_dict.values()))
         aux_list = random.sample(other_options, self.num_elements_quiz - 1)
         quiz_options_set = set(aux_list)
-        quiz_options_set.add(correct_option)
+        quiz_options_set.add(correct_answer)
 
         # 3. Shuffle the new sub_option_list
         quiz_options_list = list(quiz_options_set)
         random.shuffle(quiz_options_list)
-        question = MultipleChoiceQuestion({correct_key: correct_element}, correct_option, quiz_options_list)
+        question = MultipleChoiceQuestion({correct_key: correct_element}, correct_answer, quiz_options_list)
 
         self.current_question = question
         return question
 
     def process_answer(self, answer):
-        correct = answer == self.current_question.correct_option.id
+        correct = answer == self.current_question.correct_answer.id
 
         # update score
         self.update_score(correct)
