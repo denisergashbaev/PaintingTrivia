@@ -2,6 +2,7 @@ appnope==0.1.0
 decorator==4.0.4
 dlib==18.18.99
 Flask==0.10.1
+Flask-Login==0.3.2
 Flask-SQLAlchemy==1.0
 gnureadline==6.3.3
 ipython==4.0.0
@@ -25,5 +26,5 @@ SQLAlchemy==1.0.11
 traitlets==4.0.0
 virtualenv==13.1.2
 Werkzeug==0.11.3
-wheel==0.24.0
 WTForms==2.1
+

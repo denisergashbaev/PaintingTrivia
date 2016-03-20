@@ -61,7 +61,7 @@ class ImageQuiz(Quiz):
 
     def generate_question(self):
         '''
-        Exaustive Algorithm. Shows all images until all are correct.
+        Exhaustive Algorithm. Shows all images until all are correct.
         :return: a multiple choice question
         '''
         if not self.elements_dict:
@@ -75,17 +75,13 @@ class ImageQuiz(Quiz):
         correct_key = random.choice(self.elements_dict.keys())
 
         # 2. Create a subset of the option_list for the quiz
-        correct_element = self.elements_dict[correct_key]
-        correct_answer = self.options_dict[correct_key]
-        other_options = filter(lambda x: x != correct_answer, set(self.options_dict.values()))
-        aux_list = random.sample(other_options, self.num_elements_quiz - 1)
-        quiz_options_set = set(aux_list)
-        quiz_options_set.add(correct_answer)
+        correct_option = self.options_dict[correct_key]
+        quiz_options = random.sample(set(self.options_dict.values()) - set([correct_option]), self.num_elements_quiz - 1)
+        quiz_options.append(correct_option)
 
         # 3. Shuffle the new sub_option_list
-        quiz_options_list = list(quiz_options_set)
-        random.shuffle(quiz_options_list)
-        question = MultipleChoiceQuestion({correct_key: correct_element}, correct_answer, quiz_options_list)
+        random.shuffle(quiz_options)
+        question = MultipleChoiceQuestion({correct_key: self.elements_dict[correct_key]}, correct_option, quiz_options)
 
         self.current_question = question
         return question
@@ -116,11 +112,11 @@ class PainterQuiz(ImageQuiz):
         paintings_dict = dict()
         selected_paintings = []
         for key, painter in enumerate(selected_painters):
-            painting_aux = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(
+            painting = Painting.query.filter(Painting.painter_id == painter.id).order_by(func.random()).limit(
                 1).first()
-            selected_paintings.extend([painting_aux])
+            selected_paintings.append(painting)
             painters_dict[key] = painter
-            paintings_dict[key] = painting_aux  # get the first
+            paintings_dict[key] = painting
         return paintings_dict, painters_dict
 
 
@@ -136,9 +132,9 @@ class SaintQuiz(ImageQuiz):
         paintings_dict = dict()
         selected_paintings = []
         for key, saint in enumerate(selected_saints):
-            paintings_aux = Painting.query.filter(Painting.saints.any(id=saint.id)).order_by(func.random()).limit(
+            painting = Painting.query.filter(Painting.saints.any(id=saint.id)).order_by(func.random()).limit(
                 1).first()
-            selected_paintings.extend([paintings_aux])
+            selected_paintings.append(painting)
             saints_dict[key] = saint
-            paintings_dict[key] = paintings_aux  # get the first
+            paintings_dict[key] = painting
         return paintings_dict, saints_dict
