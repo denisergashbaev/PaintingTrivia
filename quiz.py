@@ -41,8 +41,8 @@ class Quiz:
 
     def next_question(self):
         self.number_of_rounds += 1
-        question = self.generate_question()
-        return question
+        self.generate_question()
+        return self.current_question
 
 
 class ImageQuiz(Quiz):
@@ -81,10 +81,7 @@ class ImageQuiz(Quiz):
 
         # 3. Shuffle the new sub_option_list
         random.shuffle(quiz_options)
-        question = MultipleChoiceQuestion({correct_key: self.elements_dict[correct_key]}, correct_option, quiz_options)
-
-        self.current_question = question
-        return question
+        self.current_question = MultipleChoiceQuestion({correct_key: self.elements_dict[correct_key]}, correct_option, quiz_options)
 
     def process_answer(self, answer):
         correct = answer == self.current_question.correct_answer.id

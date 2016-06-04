@@ -23,7 +23,7 @@
     <form method="post" id="saint_form_id">
         <ul class="entries">
             {% for saint in quiz.current_question.option_list %}
-            <button id="chosen_saint_{{ saint.id }}" type="button" name="chosen_saint"
+            <button type="button" name="chosen_saint"
                     value="{{ saint.id }}"
                     onclick="app.submitGuess(this, this.form, {{ quiz.current_question.correct_answer.id }})">
                 {{ saint.name }}

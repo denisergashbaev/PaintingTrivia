@@ -1,5 +1,5 @@
 from settings import db
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from models.artistic_movement import ArtisticMovement
 
 artistic_movements = db.Table('painters_to_artistic_movements',

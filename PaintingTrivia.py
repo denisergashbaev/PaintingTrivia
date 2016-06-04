@@ -123,29 +123,18 @@ def show_quiz_results():
 @app.route('/guessthepainter', methods=['GET', 'POST'])
 @login_required
 def guess_the_painter():
+    try:
+        quiz = pickle.loads(session['quiz'])
+    except KeyError:
+        quiz = PainterQuiz()
+
     # if the request is sent from a form
     if request.method == 'POST':
         x = layout_buttons()
         if x:
             return x
-
-        quiz = pickle.loads(session['quiz'])
         chosen_painter_id = int(request.form['chosen_painter'])
         quiz.process_answer(chosen_painter_id)
-        session['quiz'] = pickle.dumps(quiz)
-
-        # http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#using-exists
-
-    # the instructions below correspond to the following sql statement:
-    #  SELECT painter.id AS painter_id, painter.name AS painter_name FROM painter
-    # WHERE EXISTS (SELECT * FROM painting WHERE painter.id = painting.painter_id)
-    # ORDER BY random() LIMIT 4
-    if session['quiz'] is None:
-        # Obtain the painters and the paintings randomly
-        quiz = PainterQuiz()
-        session['quiz'] = pickle.dumps(quiz)
-    else:
-        quiz = pickle.loads(session['quiz'])
 
     # If all of the images have been seen, show again, the incorrect ones
     question = quiz.next_question()
@@ -159,23 +148,15 @@ def guess_the_painter():
 @app.route('/guessthesaint', methods=['GET', 'POST'])
 @login_required
 def guess_the_saint():
+    quiz = SaintQuiz() if session['quiz'] is None else pickle.loads(session['quiz'])
+
     # if the request is sent from a form
     if request.method == 'POST':
         x = layout_buttons()
         if x:
             return x
-
-        quiz = pickle.loads(session['quiz'])
         chosen_saint_id = int(request.form['chosen_saint'])
         quiz.process_answer(chosen_saint_id)
-        session['quiz'] = pickle.dumps(quiz)
-
-    if session['quiz'] is None:
-        # Obtain the saints and the paintings randomly
-        quiz = SaintQuiz()
-        session['quiz'] = pickle.dumps(quiz)
-    else:
-        quiz = pickle.loads(session['quiz'])
 
     # If all of the images have been seen, show again, the incorrect ones
     question = quiz.next_question()
