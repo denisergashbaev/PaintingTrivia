@@ -1,5 +1,3 @@
-import pickle
-
 from flask import request, session, render_template, redirect, url_for, flash
 from flask.ext.login import login_required, login_user, logout_user
 
@@ -113,7 +111,7 @@ def show_quiz_results():
         if x:
             initialize_quiz()
             return x
-    quiz = pickle.loads(session['quiz'])
+    quiz = session['quiz']
     redirect_to = request.args['redirect_to']
     return render_template('show_quiz_results.html',
                            quiz=quiz,
@@ -123,9 +121,8 @@ def show_quiz_results():
 @app.route('/guessthepainter', methods=['GET', 'POST'])
 @login_required
 def guess_the_painter():
-    try:
-        quiz = pickle.loads(session['quiz'])
-    except KeyError:
+    quiz = session.get('quiz')
+    if quiz is None:
         quiz = PainterQuiz()
 
     # if the request is sent from a form
@@ -139,7 +136,7 @@ def guess_the_painter():
     # If all of the images have been seen, show again, the incorrect ones
     question = quiz.next_question()
 
-    session['quiz'] = pickle.dumps(quiz)
+    session['quiz'] = quiz
     if not question:
         return redirect(url_for('show_quiz_results', redirect_to='guess_the_painter'))
     return render_template('guess_the_painter.html', quiz=quiz)
@@ -148,7 +145,9 @@ def guess_the_painter():
 @app.route('/guessthesaint', methods=['GET', 'POST'])
 @login_required
 def guess_the_saint():
-    quiz = SaintQuiz() if session['quiz'] is None else pickle.loads(session['quiz'])
+    quiz = session.get('quiz')
+    if quiz is None:
+        quiz = SaintQuiz()
 
     # if the request is sent from a form
     if request.method == 'POST':
@@ -161,10 +160,9 @@ def guess_the_saint():
     # If all of the images have been seen, show again, the incorrect ones
     question = quiz.next_question()
 
-    session['quiz'] = pickle.dumps(quiz)
+    session['quiz'] = quiz
     if not question:
         return redirect(url_for('show_quiz_results', redirect_to='guess_the_saint'))
-
     return render_template('guess_the_saint.html', quiz=quiz,
                            selected_painter=Painter.query.filter(Painter.id == question.question.painter_id).first())
 
